@@ -1,0 +1,44 @@
+---
+layout: post
+title: iOS Tips
+date: '2015-11-27 13:02:50'
+tags:
+- ios
+- tips
+---
+
+##持续更新...
+
+### git 删除.DS_Store
+命令行：`find . -name .DS_Store -print0 | xargs -0 git rm -f --ignore-unmatch`
+
+### 调整UIButton属性UIImageView和TitleLabel位置
+通过设置UIControl的属性，设置对齐属性：
+
+```
+@property(nonatomic) UIControlContentVerticalAlignment contentVerticalAlignment;     // how to position content vertically inside control. default is center
+@property(nonatomic) UIControlContentHorizontalAlignment contentHorizontalAlignment; // how to position content hozontally inside control. default is center
+
+```
+
+通过UIButton属性，单独设置两个view的位置偏移：
+
+```
+@property(nonatomic)          UIEdgeInsets contentEdgeInsets UI_APPEARANCE_SELECTOR; // default is UIEdgeInsetsZero
+@property(nonatomic)          UIEdgeInsets titleEdgeInsets;                // default is UIEdgeInsetsZero
+@property(nonatomic)          UIEdgeInsets imageEdgeInsets;                // default is UIEdgeInsetsZero
+
+```
+
+### 屏幕旋转问题
+
+iOS设置屏幕旋转可以在VC中重写以下两个方法
+
+```
+// New Autorotation support.
+- (BOOL)shouldAutorotate NS_AVAILABLE_IOS(6_0) __TVOS_PROHIBITED;
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations NS_AVAILABLE_IOS(6_0) __TVOS_PROHIBITED;
+
+```
+
+但是屏幕旋转依赖的VC却不一样，如果是UITabBarViewController中的VC，则依赖UITabBarViewController,如果是带NavigationController的则依赖NavigationController，重写方法需要写在这两个类中。总得来说如果VC有父类的VC则依赖与父类VC。

@@ -1,1 +1,35 @@
-theme: jekyll-theme-slate
+# Permalinks
+permalink:      /:year-:month-:day/:title
+
+# Setup
+title:          小小厨师的厨房
+paginate:       5
+baseurl:     
+url:            "https://iandrew.space"
+
+# Assets
+sass:
+  sass_dir:     _sass
+  style:        :compressed
+
+# Build settings
+markdown:       kramdown
+
+# About
+author:
+  name:         小小厨师
+  url:          https://iandrew.space
+  email:        iandrew@126.com
+
+# Custom vars
+version:        3.4.1
+github:
+  repo:      
+
+# Gems
+plugins:
+  - jekyll-paginate
+
+  # Comment
+comment:
+    disqus: iandrew-1
