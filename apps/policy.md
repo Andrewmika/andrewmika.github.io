@@ -1,5 +1,5 @@
 ---
-title: "privacypolicy"
+title: "policy"
 permalink: /apps/
 ---
 
