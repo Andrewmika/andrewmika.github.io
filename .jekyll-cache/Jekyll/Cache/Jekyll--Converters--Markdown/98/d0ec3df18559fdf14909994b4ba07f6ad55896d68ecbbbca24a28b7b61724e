@@ -1,0 +1,437 @@
+I"�M<h2 id="swift函数">Swift函数</h2>
+<p>Swift函数包含参数类型和返回值类型</p>
+
+<h3 id="函数定义">函数定义</h3>
+<p>Swift使用关键字<code class="language-plaintext highlighter-rouge">func</code>定义函数。</p>
+
+<p>函数定义时可以指定0个，一个或多个输入参数和一个返回值类型。</p>
+
+<p>函数的实参传递顺序必须和形参相同，<code class="language-plaintext highlighter-rouge">-&gt;</code>后定义返回值类型</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func funcName(形参/ 空) -&gt; returnType {
+    statement
+    ...
+    return parameters
+}
+
+</code></pre></div></div>
+
+<h3 id="函数参数">函数参数</h3>
+<p>Swift可以接收一个或多个参数，我们可以用元组（Tuple）向函数传递一个或多个参数。也可以创建无参函数。</p>
+
+<h3 id="元组作为函数返回值">元组作为函数返回值</h3>
+<p>元组（Tuple）与数组类似,但元组中的元素可以是任何类型，使用圆括号。</p>
+
+<p>可以使用元组类型（Tuple）让多个值作为一个复合值从函数中返回。如果不确定返回值是否非nil，可以返回可选的元组，例如<code class="language-plaintext highlighter-rouge">(Int,Int)?</code>。可选元组类型(Int, Int)?与元组包含可选类型如(Int?, Int?)是不同的，前者整个元组是可选的，后者只是每个值是可选的。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func minMax(array: [Int]) -&gt; (min: Int, max: Int)? {
+    if array.isEmpty { return nil }
+    var currentMin = array[0]
+    var currentMax = array[0]
+    for value in array[1..&lt;array.count] {
+        if value &lt; currentMin {
+            currentMin = value
+        } else if value &gt; currentMax {
+            currentMax = value
+        }
+    }
+    return (currentMin, currentMax)
+}
+</code></pre></div></div>
+
+<h3 id="函数参数名称">函数参数名称</h3>
+<p>函数参数都有一个外部参数和一个局部参数名。局部参数名在函数实现的内部使用，外部参数名用于在函数调用时传递给函数的参数，可以在局部参数名前指定外部参数名，中间以空格分隔。如果提供了外部参数名，在调用函数时必须使用外部参数名。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func funcName(inputString str: String) -&gt; String {
+
+    return str
+}
+</code></pre></div></div>
+
+<h3 id="可变参数">可变参数</h3>
+<p>当传入函数的参数数量不确定时，可以在变量类型后面假如<code class="language-plaintext highlighter-rouge">...</code>来定义可变参数。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func vari&lt;N&gt;(members: N...){
+    for i in members {
+        print(i)
+    }
+}
+</code></pre></div></div>
+
+<h3 id="常量变量io参数">常量、变量、I/O参数</h3>
+<p>一般默认在函数中定义的参数都是常量参数，只可查询使用，不能改变值。如果要什么变量参数可以在前面加上<code class="language-plaintext highlighter-rouge">var</code>，这样就可以改变参数的值，如<code class="language-plaintext highlighter-rouge">func  getName(var id:String)...</code>。函数一般是传值，不是传引用，此时参数值可以在函数内部中改变但是并不影响原来的值。如果要修改参数原来的值，可以把该参数定义为输入输出参数（In-Out Parameters），在参数前加<code class="language-plaintext highlighter-rouge">inout</code>关键字,此时需要传引用。一个输入输出参数有传入函数的值，这个值被函数修改，然后传出函数，替换原来的值。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func swapTwoInts(inout a:Int,inout b:Int){
+    
+   let t = a
+    a = b
+    b = t
+}
+
+var x = 0,y = 100
+print("x = \(x) ;y = \(y)")
+
+swapTwoInts(&amp;x, b:&amp;y)
+print("x = \(x) ;y = \(y)")
+</code></pre></div></div>
+<p>输出结果：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>x = 0 ;y = 100
+x = 100 ;y = 0
+</code></pre></div></div>
+
+<h3 id="函数类型">函数类型</h3>
+<p>每种函数都有种特定的函数类型，由函数的参数类型和返回类型组成。函数可以定义任何参数及类型。如果具有同样的参数类型和返回类型则为同一种函数类型。既然函数可以认为是一种类型，那我们可以将函数作为参数类型或返回类型使用。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func sum(a: Int, b: Int) -&gt; Int {
+    return a + b
+}
+var addition: (Int, Int) -&gt; Int = sum
+print("输出结果: \(addition(40, 89))")
+
+func another(addition: (Int, Int) -&gt; Int, a: Int, b: Int) {
+    print("输出结果: \(addition(a, b))")
+}
+another(sum, a: 10, b: 20)
+</code></pre></div></div>
+
+<h3 id="函数嵌套">函数嵌套</h3>
+<p>函数嵌套指在函数内定义一个新的函数，外部的函数可以调用函数内定义的函数。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 嵌套函数
+func calcDecrement(forDecrement total: Int) -&gt; () -&gt; Int {
+    var overallDecrement = 0
+    func decrementer() -&gt; Int {
+        overallDecrement -= total
+        return overallDecrement
+    }
+    return decrementer
+}
+
+
+calcDecrement(forDecrement: 20)()
+</code></pre></div></div>
+
+<h2 id="swift闭包">Swift闭包</h2>
+<p>闭包（Closures）是自包含的功能代码块，可以在代码中使用或用来作为参数传值。</p>
+
+<p>swift中的闭包与OC中的block和其他一些语言中的匿名函数比较类似。</p>
+
+<p>全局函数和嵌套函数其实就是特殊的闭包。</p>
+
+<p>闭包的形式</p>
+
+<table>
+   <tr><th>全局函数</th><th>嵌套函数</th><th>闭包表达式</th></tr>
+   <tr><td>有名字但不能捕获任何值。</td><td>有名字，也能捕获封闭函数内的值。</td><td>无名闭包，使用轻量级语法，可以根据上下文环境捕获值。</td></tr>
+</table>
+
+<p>Swift中闭包的优化：</p>
+
+<ul>
+  <li>根据上下文推断参数和返回值类型。</li>
+  <li>从单行表达式闭包中隐式返回（闭包只有一行代码，可以省略return）。</li>
+  <li>可以使用简化参数名，如$0,$1…(从0开始表示第i个参数)</li>
+  <li>提供了尾随闭包语法</li>
+</ul>
+
+<p>语法：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>{(parameters) -&gt; returnType in
+   statements
+}
+</code></pre></div></div>
+<p>实例:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let divide = {(val1: Int, val2: Int) -&gt; Int in 
+   return val1 / val2 
+}
+let result = divide(200, 20)
+print (result)
+</code></pre></div></div>
+
+<h3 id="闭包表达式">闭包表达式</h3>
+<p>闭包表达式是一种利用简洁语法构建内联闭包的方式。</p>
+
+<h4 id="sort函数">sort函数</h4>
+<p>Swift标准库提供了sort排序函数，会根据您提供的用于排序的闭包函数将已知类型数组的值进行排序。排序完成会返回一个排序好的数组，原数组不会被更改。<code class="language-plaintext highlighter-rouge">sort</code>函数需要提供两个参数。</p>
+
+<ul>
+  <li>已知类型的数组。</li>
+  <li>闭包函数。该闭包函数需要传入与数组元素类型相同的两个值，并返回一个布尔值用来表明第一个值是否排在第二个值前面。</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let names = ["AT", "AE", "D", "S", "BE"]
+
+// 使用普通函数(或内嵌函数)提供排序功能,闭包函数类型需为(String, String) -&gt; Bool。
+func backwards(s1: String, s2: String) -&gt; Bool {
+    return s1 &gt; s2
+}
+var reversed = names.sort(backwards)
+</code></pre></div></div>
+<h3 id="参数名称缩写">参数名称缩写</h3>
+<p>通过$0,$1,$2来顺序调用闭包的参数。<code class="language-plaintext highlighter-rouge">var reversed = names.sort({$0 &gt; $1})</code></p>
+
+<h3 id="运算符函数">运算符函数</h3>
+<p><code class="language-plaintext highlighter-rouge">&gt;</code>的定义<code class="language-plaintext highlighter-rouge">public func &gt;&lt;T : Comparable&gt;(lhs: T, rhs: T) -&gt; Bool
+</code>
+Swift 的String类型定义了关于大于号 (&gt;) 的字符串实现，其作为一个函数接受两个String类型的参数并返回Bool类型的值。 而这正好与sort(_:)方法的第二个参数需要的函数类型相符合。 因此，您可以简单地传递一个大于号，Swift可以自动推断出您想使用大于号的字符串函数实现：<code class="language-plaintext highlighter-rouge">var reversed = names.sort(&gt;)</code></p>
+
+<h3 id="尾随闭包">尾随闭包</h3>
+<p>尾随闭包是一个书写在函数括号之后的闭包表达式，函数支持将其作为函数最后一个参数调用。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func someFunctionThatTakesAClosure(closure: () -&gt; Void) {
+    // 函数体部分
+}
+
+// 以下是不使用尾随闭包进行函数调用
+someFunctionThatTakesAClosure({
+    // 闭包主体部分
+})
+
+// 以下是使用尾随闭包进行函数调用
+someFunctionThatTakesAClosure() {
+  // 闭包主体部分
+}
+</code></pre></div></div>
+
+<p>实例： <code class="language-plaintext highlighter-rouge">var reversed = names.sort() { $0 &gt; $1 }</code></p>
+
+<h3 id="捕获值和引用类型">捕获值和引用类型</h3>
+<p>闭包可以在其定义的上下文中捕获常量或变量，存储一份副本，即使定义这些常量和变量的原域已经不存在，闭包仍然可以在闭包函数体内引用和修改这些值。同时函数和闭包都是引用类型，无论将函数还是闭包赋值给一个常量还是变量，实际上都是将常量/变量的值设置为对应函数/闭包的引用。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>func makeIncrementor(forIncrement amount: Int) -&gt; () -&gt; Int {
+    var runningTotal = 0
+    func incrementor() -&gt; Int {
+        runningTotal += amount
+        return runningTotal
+    }
+    return incrementor
+}
+
+let incrementByTen = makeIncrementor(forIncrement: 10)
+
+// 返回的值为10
+incrementByTen()
+
+// 返回的值为20
+incrementByTen()
+
+// 返回的值为30
+incrementByTen()
+
+// 返回的值为40
+incrementByTen()
+
+let alsoIncrementByTen = incrementByTen
+
+// 返回的值也为50
+print(alsoIncrementByTen())
+</code></pre></div></div>
+
+<h2 id="swift枚举">Swift枚举</h2>
+<p>枚举也是一种数据类型，只是这种类型只包含自定义的特定数据，它是一组有共同特性的数据的集合。Swift使用关键字<code class="language-plaintext highlighter-rouge">enum</code>来定义。</p>
+
+<p>Swift枚举功能为：</p>
+
+<ul>
+  <li>声明在类中，可以通过实例化类来访问他的值。</li>
+  <li>枚举也可以定义构造函数来提供一个初始成员值；可以在原始的实现基础上扩展功能。</li>
+  <li>可以遵守协议来提供标准功能。</li>
+</ul>
+
+<p>语法：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>enum enumname {
+   // 枚举定义放在这里
+}
+</code></pre></div></div>
+
+<p>实例：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// 定义枚举
+enum DaysofaWeek {
+    case Sunday
+    case Monday
+    case TUESDAY
+    case WEDNESDAY
+    case THURSDAY
+    case FRIDAY
+    case Saturday
+}
+
+var weekDay = DaysofaWeek.THURSDAY
+weekDay = .THURSDAY // weekDay类型已知，可用.语法取值
+</code></pre></div></div>
+<p>当weekDay的类型已知时，再次为其赋值可以省略枚举名。使用显式类型的枚举值可以让代码具有更好的可读性。</p>
+
+<p>枚举中定义的值（如 Sunday，Monday，……和Saturday）是这个枚举的成员值（或成员）。case关键词表示一行新的成员值将被定义。</p>
+
+<p><em>注意： 和 C 和 Objective-C 不同，Swift 的枚举成员在被创建时不会被赋予一个默认的整型值。在上面的DaysofaWeek例子中，Sunday，Monday，……和Saturday不会隐式地赋值为0，1，……和6。相反，这些枚举成员本身就有完备的值，这些值是已经明确定义好的DaysofaWeek类型。</em></p>
+
+<h3 id="相关值和原始值">相关值和原始值</h3>
+<p>枚举可分为<strong>相关值</strong>和<strong>原始值</strong></p>
+
+<table>
+   <tr><th>相关值</th><th>原始值</th></tr>
+   <tr><td>不同数据类型</td><td>相同数据类型</td></tr>
+   <tr><td>实例: enum {10,0.8,"Hello"}</td><td>实例: enum {10,35,50}</td></tr>
+   <tr><td>值的创建基于常量或变量</td><td>预先填充的值</td></tr>
+   <tr><td>相关值是当你在创建一个基于枚举成员的新常量或变量时才会被设置，并且每次当你这么做得时候，它的值可以是不同的。</td><td>原始值始终是相同的</td></tr>
+</table>
+
+<h4 id="相关值">相关值</h4>
+<p>以下实例中我们定义一个名为 Student 的枚举类型，它可以是 Name 的一个相关值（Int，Int，Int，Int），或者是 Mark 的一个字符串类型（String）相关值。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>enum Student{
+    case Name(String)
+    case Mark(Int,Int,Int)
+}
+var studDetails = Student.Name("Runoob")
+var studMarks = Student.Mark(98,97,95)
+switch studMarks {
+case .Name(let studName):
+    print("学生的名字是: \(studName)。")
+case .Mark(let Mark1, let Mark2, let Mark3):
+    print("学生的成绩是: \(Mark1),\(Mark2),\(Mark3)。")
+}
+</code></pre></div></div>
+
+<h4 id="原始值">原始值</h4>
+<p>原始值可以是字符串、字符或者任意整型值或浮点型值。每个原始值在它的枚举声明中必须是唯一的。</p>
+
+<p>当原始值为整型时，不需要显示的为每个成员赋值。如果第一个没有赋值，会默认为0。隐式赋值的值一次增1.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>enum Month: Int {
+    case January = 1, February, March, April, May, June, July, August, September, October, November, December
+}
+
+let yearMonth = Month.May.rawValue
+print("数字月份为: \(yearMonth)。")
+</code></pre></div></div>
+
+<h2 id="swift结构体">Swift结构体</h2>
+<p>Swift结构体是构建代码所用的一种通用且灵活的构造体，我们可以为结构体定义属性（常量，变量）和添加方法，从而扩展结构体的功能。</p>
+
+<p>与OC的不同点：</p>
+
+<ul>
+  <li>结构体不需要包含实现文件和接口</li>
+  <li>结构体允许我们创建一个单一文件，并且系统会自动生成面向其它代码的外部接口。</li>
+</ul>
+
+<p>结构体总是通过被复制的形式在代码中传递，因此它的值是不可以修改的。</p>
+
+<h3 id="语法">语法</h3>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>struct NameStruct { 
+   Definition 1
+   Definition 2
+   ……
+   Definition N
+}
+</code></pre></div></div>
+
+<p>我们可以通过结构体名来访问结构体成员，实例化结构体使用<code class="language-plaintext highlighter-rouge">let</code>关键字。结构体内使用成员属性使用 self 关键字。</p>
+
+<p>以下实例化通过结构体实例化时传值并且克隆一个结构体：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>struct MarksStruct {
+   var mark: Int
+
+   init(mark: Int) {
+      self.mark = mark
+   }
+}
+var aStruct = MarksStruct(mark: 98)
+var bStruct = aStruct // aStruct 和 bStruct 是使用相同值的结构体！
+bStruct.mark = 97
+print(aStruct.mark) // 98
+print(bStruct.mark) // 97
+
+</code></pre></div></div>
+
+<h3 id="结构体的应用">结构体的应用</h3>
+<p>在你的代码中，你可以使用结构体来定义你的自定义数据类型。</p>
+
+<p>结构体实例总是通过值传递来定义你的自定义数据类型。</p>
+
+<p>按照通用的准则，当符合一条或多条以下条件时，请考虑构建结构体：</p>
+
+<ul>
+  <li>结构体的主要目的是用来封装少量相关简单数据值。</li>
+  <li>有理由预计一个结构体实例在赋值或传递时，封装的数据将会被拷贝而不是被引用。</li>
+  <li>任何在结构体中储存的值类型属性，也将会被拷贝，而不是被引用。</li>
+  <li>结构体不需要去继承另一个已存在类型的属性或者行为。</li>
+</ul>
+
+<p>举例来说，以下情境中适合使用结构体：</p>
+
+<ul>
+  <li>几何形状的大小，封装一个width属性和height属性，两者均为Double类型。</li>
+  <li>一定范围内的路径，封装一个start属性和length属性，两者均为Int类型。</li>
+  <li>三维坐标系内一点，封装x，y和z属性，三者均为Double类型。</li>
+</ul>
+
+<p>结构体实例是通过值传递而不是通过引用传递。</p>
+
+<h2 id="swift类">Swift类</h2>
+<p>Swift并不要求你为自定义类去创建独立的接口和实现文件。只需要在一个单一的文件中定义一个类，系统会自动生成面向其它代码的外部接口。</p>
+
+<h3 id="类和结构体的对比">类和结构体的对比</h3>
+
+<p>共同点：</p>
+
+<ul>
+  <li>定义属性用于存储值</li>
+  <li>定义方法用于提供功能</li>
+  <li>定义附属脚本用于访问值</li>
+  <li>定义构造器用于生成初始化值</li>
+  <li>通过扩展以增加默认实现的功能</li>
+  <li>符合协议以对某类提供标准功能</li>
+</ul>
+
+<p>与结构体相比，类还有如下的附加功能：</p>
+
+<ul>
+  <li>继承允许一个类继承另一个类的特征</li>
+  <li>类型转换允许在运行时检查和解释一个类实例的类型</li>
+  <li>解构器允许一个类实例释放任何其所被分配的资源</li>
+  <li>引用计数允许对一个类的多次引用</li>
+</ul>
+
+<p>语法：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Class Classname {
+   Definition 1
+   Definition 2
+   ……
+   Definition N
+}
+</code></pre></div></div>
+
+<h3 id="作为引用类型访问类属性">作为引用类型访问类属性</h3>
+<p>累的属性可以通过<code class="language-plaintext highlighter-rouge">.</code>来访问，格式为<code class="language-plaintext highlighter-rouge">实例化类名.属性名</code>。</p>
+
+<h3 id="恒等运算符">恒等运算符</h3>
+<p>因为类是引用类型，有可能有多个常量和变量在后台同时引用某一个类实例。</p>
+
+<p>为了能够判定两个常量或者变量是否引用同一个类实例，Swift内建了两个恒等运算符。</p>
+
+<table>
+   <tr><th>恒等运算符</th><th>不恒等运算符</th></tr>
+   <tr><td>运算符为：= = = </td> <td> 运算符为：!== </td></tr>
+   <tr><td>如果两个常量或者变量引用同一个类实例则返回 true</td><td>如果两个常量或者变量引用不同一个类实例则返回 true</td></tr>
+</table>
+
+<hr />
+<p>参考：</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>[Swift 教程</td>
+      <td>菜鸟教程](http://www.runoob.com/swift/swift-tutorial.html)</td>
+    </tr>
+  </tbody>
+</table>
+:ET

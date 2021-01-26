@@ -1,0 +1,11 @@
+I"4<h3 id="core-foundation对象的内存管理">Core Foundation对象的内存管理</h3>
+<p>底层的Core Foundation对象，大多数以XxxCreateWithXxx的方式创建如：<code class="language-plaintext highlighter-rouge">CFStringRef str = CFStringCreateWithCString(kCFAllocatorDefault,"Hello World",kCFStringEncodingUTF8);</code>,对于<strong>CFRetain</strong>和<strong>CFRelease</strong>两种方法，与OC中的Retain和Release大致一致。所以在处理底层Core Foundation对象，我们只需要延续以前手工管理引用计数的办法即可。</p>
+
+<p>在ARC下，我们有时需要将一个Core Foundation对象转换成一个OC对象，这时候我们需要告诉编译器，转换过程中引用计数该如何调整，这就引入了bridge相关的关键字。</p>
+
+<ul>
+  <li><strong>__bridge</strong>:只做类型转换，不修改相关对象的引用计数，原来的Core Foundation对象在不用时，需要调用CFRelease方法。</li>
+  <li><strong>__bridge_retained</strong>:类型转换后，将相关对象的引用计数加1,原来的Core Foundation对象在不用时，需要调用CFRelease方法。</li>
+  <li><strong>__bridge_transfer</strong>:类型转换后，将该对象的引用计数交给ARC管理，Core Foundation对象在不用时，不再需要调用CFRelease方法。</li>
+</ul>
+:ET

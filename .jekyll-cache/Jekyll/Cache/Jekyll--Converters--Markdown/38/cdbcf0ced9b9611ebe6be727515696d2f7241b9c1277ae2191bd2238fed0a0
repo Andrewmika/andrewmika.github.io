@@ -1,0 +1,690 @@
+I"�W<h3 id="js用法">JS用法</h3>
+<p>根据 <a href="http://www.runoob.com/">http://www.runoob.com/</a> 进行整理</p>
+
+<h4 id="标签使用">标签使用</h4>
+<p><code class="language-plaintext highlighter-rouge">&lt;script&gt;code&lt;/script&gt;</code>标识js的起始和结束，中间包含js代码；</p>
+
+<h4 id="外部js">外部JS</h4>
+<p>JS脚本一般集中放置在<code class="language-plaintext highlighter-rouge">&lt;head&gt;</code>或<code class="language-plaintext highlighter-rouge">&lt;body&gt;</code>底部，便于管理。外部JS使用.js作为扩展名，并在<code class="language-plaintext highlighter-rouge">&lt;script&gt;</code>标签的属性中设置JS文件。eg：<code class="language-plaintext highlighter-rouge">&lt;script src= "script.js"&gt;&lt;/script&gt;</code>。</p>
+
+<p><em>外部脚本不能包含<code class="language-plaintext highlighter-rouge">&lt;script&gt;</code>标签</em></p>
+
+<h3 id="js输出">JS输出</h3>
+
+<p>####操作HTML元素
+在HTML中的元素用”id”属性标明后，可在<code class="language-plaintext highlighter-rouge">&lt;script&gt;</code>中使用<code class="language-plaintext highlighter-rouge">document.getElementById(id)</code>方法来访问。eg:
+<code class="language-plaintext highlighter-rouge">&lt;script&gt;
+document.getElementById("demo").innerHTML = "段落已修改。";
+&lt;/script&gt;</code></p>
+
+<h4 id="写到html文档">写到HTML文档</h4>
+<p>可用<code class="language-plaintext highlighter-rouge">&lt;document.write()&gt;</code>将内容输出到文档中，如果在文档已加载完成后执行此代码，将覆盖原有HTML页面的内容。</p>
+
+<h4 id="写到控制台">写到控制台</h4>
+<p>可用<code class="language-plaintext highlighter-rouge">&lt;console.log()&gt;</code>将内容写到控制台，用于调试。</p>
+
+<h3 id="js语法">JS语法</h3>
+
+<h4 id="js字面量">JS字面量</h4>
+<p>字面量，常量，变量关系</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var a；// a为变量
+const int b = 10; // b 为常量，10为字面量
+string str = "hello"; // str 为变量，hello为字面量
+</code></pre></div></div>
+<p>数字字面量（Number）：整数，小数，科学计数。<code class="language-plaintext highlighter-rouge">3.14，1001，123e5</code>；</p>
+
+<p>字符串字面量（String）：使用单引号或双引号:<code class="language-plaintext highlighter-rouge">"Andrew",'Lars'</code>;</p>
+
+<p>表达式字面量用于计算：<code class="language-plaintext highlighter-rouge">5 + 6，1 * 2</code>……；</p>
+
+<p>数组（Array）字面量定义一个数组：<code class="language-plaintext highlighter-rouge">[40,100,1]</code>；</p>
+
+<p>对象（Object）字面量定义一个对象：<code class="language-plaintext highlighter-rouge">{firstName:"Andrew",lastName:"Shen"}</code>;</p>
+
+<p>函数（Function）字面量定义一个函数：<code class="language-plaintext highlighter-rouge">function myFunction(a,b){return a * b}</code></p>
+
+<h4 id="注释">注释</h4>
+<p>使用<code class="language-plaintext highlighter-rouge">//</code>进行单行注释
+使用 <code class="language-plaintext highlighter-rouge">/* code */</code> 进行多行注释</p>
+
+<h4 id="js函数">JS函数</h4>
+<p>JS语句可以卸载函数内，函数可以重复引用；引用一个函数=电泳函数</p>
+
+<p><em>JS对大小写敏感</em></p>
+
+<h3 id="js语句">JS语句</h3>
+
+<h4 id="语句标识符">语句标识符</h4>
+
+<table border="1">
+<tr><th>语句</th><th>描述</th></tr>
+<tr><td>break</td>
+<td>用于跳出循环</td></tr>
+<tr><td>catch</td>
+<td>语句块，在 try 语句块执行出错时执行 catch 语句块。</td></tr>
+<tr><td>continue</td>
+<td>跳过循环中的一个迭代。</td></tr>
+<tr><td>do</td>
+<td>while | 执行一个语句块，在条件语句为 true 时继续执行该语句块。</td></tr>
+<tr><td>for</td>
+<td>在条件语句为 true 时，可以将代码块执行指定的次数。</td></tr>
+<tr><td>for</td>
+<td>in | 用于遍历数组或者对象的属性（对数组或者对象的属性进行循环操作）。</td></tr>
+<tr><td>function</td>
+<td>定义一个函数</td></tr>
+<tr><td>if</td>
+<td>else | 用于基于不同的条件来执行不同的动作。</td></tr>
+<tr><td>return</td>
+<td>退出函数</td></tr>
+<tr><td>switch</td>
+<td>用于基于不同的条件来执行不同的动作。</td></tr>
+<tr><td>throw</td>
+<td>抛出（生成）错误 。</td></tr>
+<tr><td>try</td>
+<td>实现错误处理，与 catch 一同使用。</td></tr>
+<tr><td>var</td>
+<td>声明一个变量。</td></tr>
+<tr><td>while</td>
+<td>当条件语句为 true 时，执行语句块。</td></tr>
+</table>
+
+<h4 id="对代码进行折行">对代码进行折行</h4>
+<p>在文本字符串中可使用<code class="language-plaintext highlighter-rouge">\</code>对代码进行换行。</p>
+
+<h3 id="js变量">JS变量</h3>
+<p>变量是用于存储信息的<em>容器</em></p>
+
+<h4 id="变量规则">变量规则</h4>
+<ul>
+  <li>变量必须已字母开头。</li>
+  <li>变量能以$和_开头。</li>
+  <li>变量名称对大小写敏感。</li>
+</ul>
+
+<h4 id="变量的声明和创建">变量的声明和创建</h4>
+<p>使用<code class="language-plaintext highlighter-rouge">var</code>来声明变量。声明时可以对其赋值。如果未声明直接创建则变量为全局变量：eg:<code class="language-plaintext highlighter-rouge">name = Andrew</code>,nama为全局变量.</p>
+
+<h3 id="js数据类型">JS数据类型</h3>
+
+<ul>
+  <li>字符串（String）</li>
+  <li>数字（Number）</li>
+  <li>布尔（Boolean）</li>
+  <li>数组（Array）</li>
+  <li>对象（Object）</li>
+  <li>空（Null）</li>
+  <li>未定义（undefined）</li>
+</ul>
+
+<h4 id="js拥有动态类型">JS拥有动态类型！！</h4>
+<p>JS变量可用作不同的类型，厉害。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var x;               // x 为 undefined
+var x = 5;           // 现在 x 为数字
+var x = "John";      // 现在 x 为字符串
+</code></pre></div></div>
+
+<h4 id="string">String</h4>
+<p>字符串可以是引号中的任意文本，可使用<code class="language-plaintext highlighter-rouge">''或""</code>；</p>
+
+<h4 id="number">Number</h4>
+<p>JS只有一种数据类型，Number全搞定。</p>
+
+<h4 id="boolean">Boolean</h4>
+<p>布尔只有两个值，true 和 false</p>
+
+<h4 id="array">Array</h4>
+<p>array创建:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var array = new Array();
+array[0] = "Andrew";
+array[1] = "Lars";
+</code></pre></div></div>
+
+<p><code class="language-plaintext highlighter-rouge">var array = new Array("Andrew","Lars");</code></p>
+
+<p><code class="language-plaintext highlighter-rouge">var array = ["Andrew","Lars"];</code></p>
+
+<h4 id="object">Object</h4>
+<p>JS对象是拥有属性和方法的数据。
+对象有花括号分隔，内部以键值对（name:value）的形式定义，属性由逗号分隔。
+<code class="language-plaintext highlighter-rouge">var person = {firstName:"Andrew", lastName:"Shen"}</code>;</p>
+
+<p>寻址方式：<code class="language-plaintext highlighter-rouge">name = person.lastName; 或 name = person["lastName"]</code></p>
+
+<p>方法创建：<code class="language-plaintext highlighter-rouge">methodName : funciton() {code}</code></p>
+
+<p>对象方法调用,通过添加（）调用 <code class="language-plaintext highlighter-rouge">objectName.methodName()</code>’</p>
+
+<h4 id="undefined-和-null">Undefined 和 Null</h4>
+<p>Undefined表示变量不含有值。</p>
+
+<p>通过将变量的值设为null来清空变量</p>
+
+<h4 id="声明变量类型关键词new来声明">声明变量类型,关键词”new”来声明</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var carname=new String;
+var x=      new Number;
+var y=      new Boolean;
+var cars=   new Array;
+var person= new Object;
+</code></pre></div></div>
+
+<h3 id="js函数-1">JS函数</h3>
+
+<h4 id="函数的语法">函数的语法</h4>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function functionName(){
+	code lines;
+}
+</code></pre></div></div>
+<p>JS大小写敏感，function一定为小写。</p>
+
+<h4 id="带参函数">带参函数</h4>
+<p>声明：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function myFunction(var1,var2)
+{
+代码
+}
+</code></pre></div></div>
+<p>调用：<code class="language-plaintext highlighter-rouge">myFunction(args1,args2)</code></p>
+
+<h4 id="带有返回值的函数">带有返回值的函数</h4>
+<p><em>直接使用<strong>return</strong>即可以实现</em></p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>function myFunction()
+{
+var x=5;
+return x;
+}
+</code></pre></div></div>
+
+<h3 id="js作用域">JS作用域</h3>
+
+<h4 id="局部作用域">局部作用域</h4>
+<p>变量在函数内声明：局部变量。只能在函数内部访问。
+局部变量在函数执行完毕后销毁。</p>
+
+<h4 id="全局变量">全局变量</h4>
+<p>变量在函数外定义，或者在函数内没有声明，则为全局变量。在网页中所有脚本和函数均可使用。
+全局变量在页面关闭后销毁。</p>
+
+<h4 id="html中的全局变量">HTML中的全局变量</h4>
+<p>HTML中，全局变量是window对象，所有数据变量都属于window对象。</p>
+
+<h3 id="js事件">JS事件</h3>
+
+<h4 id="html事件">HTML事件</h4>
+<p>HTML元素可以添加事件属性，使用JS代码来添加HTML元素。
+单引号：<code class="language-plaintext highlighter-rouge">&lt;some-HTML-element some-event='some JavaScript'&gt;</code></p>
+
+<p>双引号：<code class="language-plaintext highlighter-rouge">&lt;some-HTML-element some-event="some JavaScript"&gt;</code></p>
+
+<p>eg:<code class="language-plaintext highlighter-rouge">&lt;button onclick='this.innerHTML=Date()'&gt;The time is?&lt;/button&gt;</code>,<em>this</em>改变自身元素内容。</p>
+
+<h4 id="常见html事件">常见HTML事件</h4>
+<p>事件  |  描述</p>
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>onchange</td>
+          <td>HT元素改变</td>
+        </tr>
+        <tr>
+          <td>onclick</td>
+          <td>用户点击HTML元素</td>
+        </tr>
+        <tr>
+          <td>onmouseover</td>
+          <td>用户在一个HTML元素上移动鼠标</td>
+        </tr>
+        <tr>
+          <td>onmouseoout</td>
+          <td>用户从一个HTML元素上移开鼠标</td>
+        </tr>
+        <tr>
+          <td>onkeydown</td>
+          <td>用户按下键盘按键</td>
+        </tr>
+        <tr>
+          <td>onload</td>
+          <td>浏览器已完成页面的加载</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h3 id="js字符串">JS字符串</h3>
+<p>用于存储和处理文本。不要创建String对象，会拖慢执行速度，可能产生其他副作用。</p>
+
+<h4 id="特殊字符转义">特殊字符转义</h4>
+<p>代码 | 输出</p>
+<ul>
+  <li>
+    <table>
+      <tbody>
+        <tr>
+          <td>——</td>
+          <td> </td>
+        </tr>
+        <tr>
+          <td>'</td>
+          <td>单引号</td>
+        </tr>
+        <tr>
+          <td>"</td>
+          <td>双引号</td>
+        </tr>
+        <tr>
+          <td>\</td>
+          <td>反斜杠</td>
+        </tr>
+        <tr>
+          <td>\n</td>
+          <td>换行</td>
+        </tr>
+        <tr>
+          <td>\r</td>
+          <td>回车</td>
+        </tr>
+        <tr>
+          <td>\t</td>
+          <td>tab(制表符)</td>
+        </tr>
+        <tr>
+          <td>\b</td>
+          <td>退格符</td>
+        </tr>
+        <tr>
+          <td>\f</td>
+          <td>换页符</td>
+        </tr>
+      </tbody>
+    </table>
+  </li>
+</ul>
+
+<h4 id="字符串属性和方法">字符串属性和方法</h4>
+<p><strong>属性</strong>：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>属性</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>constructor</td>
+      <td>返回创建字符串属性属性的函数</td>
+    </tr>
+    <tr>
+      <td>length</td>
+      <td>返回字符串的长度</td>
+    </tr>
+    <tr>
+      <td>prototype</td>
+      <td>允许您向对象添加属性和方法</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>方法</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>方法</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>charAt()</td>
+      <td>返回指定索引位置的字符</td>
+    </tr>
+    <tr>
+      <td>charCodeAt()</td>
+      <td>返回指定索引位置字符的 Unicode 值</td>
+    </tr>
+    <tr>
+      <td>concat()</td>
+      <td>连接两个或多个字符串，返回连接后的字符串</td>
+    </tr>
+    <tr>
+      <td>fromCharCode()</td>
+      <td>将字符转换为 Unicode 值</td>
+    </tr>
+    <tr>
+      <td>indexOf()</td>
+      <td>返回字符串中检索指定字符第一次出现的位置</td>
+    </tr>
+    <tr>
+      <td>lastIndexOf()</td>
+      <td>返回字符串中检索指定字符最后一次出现的位置</td>
+    </tr>
+    <tr>
+      <td>localeCompare()</td>
+      <td>用本地特定的顺序来比较两个字符串</td>
+    </tr>
+    <tr>
+      <td>match()</td>
+      <td>找到一个或多个正则表达式的匹配</td>
+    </tr>
+    <tr>
+      <td>replace()</td>
+      <td>替换与正则表达式匹配的子串</td>
+    </tr>
+    <tr>
+      <td>search()</td>
+      <td>检索与正则表达式相匹配的值</td>
+    </tr>
+    <tr>
+      <td>slice()</td>
+      <td>提取字符串的片断，并在新的字符串中返回被提取的部分</td>
+    </tr>
+    <tr>
+      <td>split()</td>
+      <td>把字符串分割为子字符串数组</td>
+    </tr>
+    <tr>
+      <td>substr()</td>
+      <td>从起始索引号提取字符串中指定数目的字符</td>
+    </tr>
+    <tr>
+      <td>substring()</td>
+      <td>提取字符串中两个指定的索引号之间的字符</td>
+    </tr>
+    <tr>
+      <td>toLocaleLowerCase()</td>
+      <td>根据主机的语言环境把字符串转换为小写，只有几种语言（如土耳其语）具有地方特有的大小写映射</td>
+    </tr>
+    <tr>
+      <td>toLocaleUpperCase()</td>
+      <td>根据主机的语言环境把字符串转换为大写，只有几种语言（如土耳其语）具有地方特有的大小写映射</td>
+    </tr>
+    <tr>
+      <td>toLowerCase()</td>
+      <td>把字符串转换为小写</td>
+    </tr>
+    <tr>
+      <td>toString()</td>
+      <td>返回字符串对象值</td>
+    </tr>
+    <tr>
+      <td>toUpperCase()</td>
+      <td>把字符串转换为大写</td>
+    </tr>
+    <tr>
+      <td>trim()</td>
+      <td>移除字符串首尾空白</td>
+    </tr>
+    <tr>
+      <td>valueOf()</td>
+      <td>返回某个字符串对象的原始值</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3 id="js运算符">JS运算符</h3>
+<p>JS运算符与一般编程语言相似。</p>
+
+<h4 id="运算符">+运算符</h4>
+<p><strong>+</strong>运算符用于把文本值或字符串变量加起来\连接起来。</p>
+
+<p>可对字符串和数字进行加法运算：<code class="language-plaintext highlighter-rouge">z = "hello" + 5</code>,z = hello5</p>
+
+<h3 id="比较运算符条件语句循环语句">比较运算符，条件语句，循环语句</h3>
+<p>与一般编程语言相似。</p>
+
+<h3 id="typeof操作符">typeof操作符</h3>
+<p>检测变量的数据类型。</p>
+
+<p><em>用typeof检测null返回的是objet。null是一个只有一个值的特殊类型。标识一个空对象引用</em></p>
+
+<p><em>typeof一个没有值的变量会返回undefined，undefined是一个没有设置值的变量</em></p>
+
+<h3 id="js类型转换">JS类型转换</h3>
+<p>Number()转换为数字，String()转换为字符串，Boolean()转换为布尔值。</p>
+
+<p>5种数据类型：String，Number，Boolean, Object, Function.</p>
+
+<p>3种对象类型：Object，Date，Array</p>
+
+<p>2种不包含任何值的数据类型：Null,Undefined</p>
+
+<h4 id="自动转换类型">自动转换类型</h4>
+<p>当JS尝试操作一个『错误』的数据类型时，会自动转换为『正确』的数据类型。</p>
+
+<p>当你尝试输出一个对象或变量时，JS会自动调用变量的toString()方法。</p>
+
+<h3 id="js正则表达式regexregexpre">JS正则表达式（regex\regexp\RE）</h3>
+<p>正则表达式是由一个字符序列形成的搜索模式。</p>
+
+<p>当你在文本中搜索数据是，你可以用搜索模式来描述你要查询的内容。</p>
+
+<p>正则表达式可以是一个简单的字符，或一个更复杂的模式。</p>
+
+<p>正则表达式可用于所有文本搜索和文本替换的操作。</p>
+
+<h4 id="语法">语法</h4>
+<p><code class="language-plaintext highlighter-rouge">/pattern/modifiers;</code></p>
+
+<p>eg:<code class="language-plaintext highlighter-rouge">var patt = /w3cschool/i</code></p>
+
+<p>####使用字符串方法
+JS中，正则表达式常用于字符串方法：<strong>search()</strong>,<strong>replace()</strong>.</p>
+
+<p>eg:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var str = "Visit w3cschool";
+var n = str.search(/w3cschool/i);
+</code></pre></div></div>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>var str = "Visit Microsoft!";
+var res = str.replace(/microsoft/i, "w3cschool"); // 不区分大小写
+</code></pre></div></div>
+
+<h4 id="正则表达式修饰符">正则表达式修饰符</h4>
+<p>修饰符 可以在全局搜索中不区分大小写:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>修饰符</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>i</td>
+      <td>执行对大小写不敏感的匹配。</td>
+    </tr>
+    <tr>
+      <td>g</td>
+      <td>执行全局匹配（查找所有匹配而非在找到第一个匹配后停止）。</td>
+    </tr>
+    <tr>
+      <td>m</td>
+      <td>执行多行匹配。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>####正则表达式模式
+方括号用于查找某个范围内的字符：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>表达式</th>
+      <th>描述</th>
+      <th> </th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>[abc]</td>
+      <td>查找方括号之间的任何字符。</td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>[0-9]</td>
+      <td>查找任何从 0 至 9 的数字。</td>
+      <td> </td>
+      <td> </td>
+    </tr>
+    <tr>
+      <td>(x</td>
+      <td>y)</td>
+      <td>查找任何以</td>
+      <td>分隔的选项。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>元字符是拥有特殊含义的字符：</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>元字符</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>\d</td>
+      <td>查找数字。</td>
+    </tr>
+    <tr>
+      <td>\s</td>
+      <td>查找空白字符。</td>
+    </tr>
+    <tr>
+      <td>\b</td>
+      <td>匹配单词边界。</td>
+    </tr>
+    <tr>
+      <td>\uxxxx</td>
+      <td>查找以十六进制数 xxxx 规定的 Unicode 字符。</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>量词:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>量词</th>
+      <th>描述</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>n+</td>
+      <td>匹配任何包含至少一个 n 的字符串。</td>
+    </tr>
+    <tr>
+      <td>n*</td>
+      <td>匹配任何包含零个或多个 n 的字符串。</td>
+    </tr>
+    <tr>
+      <td>n?</td>
+      <td>匹配任何包含零个或一个 n 的字符串。</td>
+    </tr>
+  </tbody>
+</table>
+
+<h4 id="test">test()</h4>
+<p>test()是一个正则表达式。</p>
+
+<p>test()方法用于检测一个字符串是否匹配某个模式，如果字符串中含有匹配的文本，则返回true，否则返回false.</p>
+
+<h4 id="exec">exec()</h4>
+<p>exec()方法是一个正则表达式。</p>
+
+<p>exec() 方法用于检索字符串中的正则表达式的匹配。</p>
+
+<p>该函数返回一个数组，其中存放匹配的结果。如果未找到匹配，则返回值为 null。</p>
+
+<h3 id="js表单验证">JS表单验证</h3>
+
+<h4 id="必填项目">必填项目</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	&lt;!DOCTYPE html&gt;
+	&lt;html&gt;
+	&lt;head&gt;
+	&lt;script&gt;
+	function validateForm()
+	{
+	var x=document.forms["myForm"]["fname"].value;
+	if (x==null || x=="")
+	  {
+	  alert("姓必须填写");
+	  return false;
+	  }
+	}
+	&lt;/script&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+	&lt;form name="myForm" action="demo-form.php" onsubmit="return validateForm()" method="post"&gt;
+	姓: &lt;input type="text" name="fname"&gt;
+	&lt;input type="submit" value="提交"&gt;
+	&lt;/form&gt;
+	&lt;/body&gt;
+	&lt;/html&gt;
+
+</code></pre></div></div>
+
+<h4 id="email验证">Email验证</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	&lt;!DOCTYPE html&gt;
+	&lt;html&gt;
+	&lt;head&gt;
+	&lt;script&gt;
+	function validateForm()
+	{
+	var x=document.forms["myForm"]["email"].value;
+	var atpos=x.indexOf("@");
+	var dotpos=x.lastIndexOf(".");
+	if (atpos&lt;1 || dotpos&lt;atpos+2 || dotpos+2&gt;=x.length)
+	  {
+	  alert("Not a valid e-mail address");
+	  return false;
+	  }
+	}
+	&lt;/script&gt;
+	&lt;/head&gt;
+	&lt;body&gt;
+	&lt;form name="myForm" action="demo-form.php" onsubmit="return validateForm();" method="post"&gt;
+	Email: &lt;input type="text" name="email"&gt;
+	&lt;input type="submit" value="Submit"&gt;
+	&lt;/form&gt;
+	&lt;/body&gt;
+	&lt;/html&gt;
+</code></pre></div></div>
+
+<h3 id="void">void</h3>
+
+<h4 id="void0">void(0)</h4>
+<p>void 是 JavaScript 中非常重要的关键字，该操作符指定要计算一个表达式但是不返回值。</p>
+
+<p>void(0) 计算为 0，但 Javascript 上没有任何效果。</p>
+
+<h4 id="href与hrefjavascriptvoid0的区别">href=”#”与href=”javascript:void(0)”的区别</h4>
+<p><code class="language-plaintext highlighter-rouge">#</code>包含了一个位置信息，默认的锚是#top 也就是网页的上端。</p>
+
+<p>而javascript:void(0), 仅仅表示一个死链接。</p>
+
+<p>在页面很长的时候会使用 # 来定位页面的具体位置，格式为：# + id。</p>
+
+<p>如果你要定义一个死链接请使用 javascript:void(0) 。</p>
+:ET

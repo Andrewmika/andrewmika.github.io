@@ -1,0 +1,338 @@
+I"�6<h3 id="一install-cordova">一、install Cordova</h3>
+<ol>
+  <li>install Node.js</li>
+  <li>install cordova:
+<code class="language-plaintext highlighter-rouge">$ sudo npm install -g cordova</code></li>
+</ol>
+
+<h3 id="二create-the-app">二、Create the App</h3>
+<ol>
+  <li>create:<code class="language-plaintext highlighter-rouge">$ cordova create hello(directory) com.example.hello HelloWorld(projectName)</code></li>
+  <li>add platforms:<code class="language-plaintext highlighter-rouge">$ cd hello </code>
+` $ cordova platform add ios`</li>
+  <li>check platforms:<code class="language-plaintext highlighter-rouge">$ cordova platforms ls</code></li>
+  <li>remove platforms:<code class="language-plaintext highlighter-rouge">$ cordova platform remove/rm blackberry10</code></li>
+</ol>
+
+<h3 id="三run-the-app">三、run the App</h3>
+<ol>
+  <li>build:<code class="language-plaintext highlighter-rouge">$ cordova build or  $ cordova build/prepare/compile ios</code></li>
+  <li>test:<code class="language-plaintext highlighter-rouge">$ cordova emulate ios</code></li>
+</ol>
+
+<h3 id="四add-plugins">四、add plugins</h3>
+<ol>
+  <li>search:<code class="language-plaintext highlighter-rouge">$ cordova plugin search ***</code></li>
+  <li>add:<code class="language-plaintext highlighter-rouge">$ cordova plugin add cordova-plugin-device</code></li>
+  <li>check:<code class="language-plaintext highlighter-rouge">cordova plugin ls</code></li>
+</ol>
+
+<p>#### advanced</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>1. version:`$ cordova plugin add cordova-plugin-console@latest(0.2.1)`
+2. URL:`$ cordova plugin add https://github.com/apache/cordova-plugin-console.git`
+3. tag or branch:`$ cordova plugin add https://github.com/apache/cordova-plugin-console.git#r0.2.0`
+4. subdirectory:`$ cordova plugin add https://github.com/someone/aplugin.git#:/my/sub/dir`
+5. local path:`$ cordova plugin add ../my_plugin_dir`
+</code></pre></div></div>
+
+<h3 id="五updating-cordova-and-project">五、updating Cordova and project</h3>
+<ol>
+  <li>updating Cordova:<code class="language-plaintext highlighter-rouge"> $ sudo npm update -g cordova</code> or <code class="language-plaintext highlighter-rouge">$ sudo npm install -g cordova@3.1.0-0.2.0</code></li>
+  <li>listing the info:<code class="language-plaintext highlighter-rouge"> $ npm info cordova</code></li>
+  <li>updating the project:<code class="language-plaintext highlighter-rouge">$ cordova platform update ios</code></li>
+</ol>
+
+<h3 id="六adding-cleaver-to-the-xcode-project-cordovalib-sub-project">六、Adding Cleaver to the Xcode Project (CordovaLib Sub-Project)</h3>
+<ol>
+  <li>
+    <p>Quit Xcode if it is running.</p>
+  </li>
+  <li>
+    <p>Open a terminal and navigate to the source directory for Cordova iOS.</p>
+  </li>
+  <li>
+    <p>Copy the <strong>config.xml</strong> file described above into the project directory.</p>
+  </li>
+  <li>
+    <p>Open Xcode and use the Finder to copy the <strong>config.xml</strong> file into its Project Navigator window.</p>
+  </li>
+  <li>
+    <p>Choose Create groups for any added folders and press Finish.</p>
+  </li>
+  <li>
+    <p>Use the Finder to copy the <strong>CordovaLib/CordovaLib.xcodeproj</strong> file into Xcode’s Project Navigator</p>
+  </li>
+  <li>
+    <p>Select <strong>CordovaLib.xcodeproj</strong> within the Project Navigator.</p>
+  </li>
+  <li>
+    <p>Type the <strong>Option-Command-1</strong> key combination to show the File Inspector.</p>
+  </li>
+  <li>
+    <p>Choose Relative to Group in the File Inspector for the drop-down menu for Location.</p>
+  </li>
+  <li>
+    <p>Select the project icon in the Project Navigator, select the Target, then select the Build Settings tab.</p>
+  </li>
+  <li>
+    <p>Add <strong>-force_load</strong> and <strong>-Obj-C</strong> for the <strong>Other Linker Flags</strong> value.</p>
+  </li>
+  <li>Click on the project icon in the Project Navigator, select the Target, then select the Build Phases tab.</li>
+  <li>
+    <p>Expand Link Binaries with Libraries.</p>
+  </li>
+  <li>Select the <strong>+</strong> button, and add the following frameworks. Optionally within the Project Navigator, move them under the Frameworks group:</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> AssetsLibrary.framework 
+ CoreLocation.framework 
+ CoreGraphics.framework 
+ MobileCoreServices.framework
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p>Expand Target Dependencies, the top box with that label if there’s more than one box.</p>
+  </li>
+  <li>
+    <p>Select the <strong>+</strong> button, and add the CordovaLib build product.</p>
+  </li>
+  <li>
+    <p>Expand Link Binaries with Libraries, the top box with that label if there’s more than one box.</p>
+  </li>
+  <li>
+    <p>Select the <strong>+</strong> button, and add <strong>libCordova.a</strong>.</p>
+  </li>
+  <li>
+    <p>Set the Xcode <strong>Preferences → Locations → Derived Data → Advanced…</strong> to <strong>Unique</strong>.</p>
+  </li>
+  <li>
+    <p>Select the project icon in the Project Navigator, select your Target, then select the Build Settings tab.</p>
+  </li>
+  <li>
+    <p>Search for <strong>Header Search Paths</strong>. For that setting, add these three values below, including the quotes:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> "$(TARGET_BUILD_DIR)/usr/local/lib/include"        
+ "$(OBJROOT)/UninstalledProducts/include"
+ "$(BUILT_PRODUCTS_DIR)"
+</code></pre></div></div>
+
+<h3 id="七using-cdvviewcontroller">七、using CDVViewController</h3>
+<p>two properties:<strong>wwwFolderName</strong> and <strong>startPage</strong></p>
+
+<h3 id="八about-plugin">八、about Plugin</h3>
+<p><em>An iOS plugin is implemented as an Objective-C class that extends the CDVPlugin class. For JavaScript’s exec method’s service parameter to map to an Objective-C class, each plugin class <strong>must be registered</strong> as a <strong>&lt; feature&gt;</strong> tag in the named application directory’s <strong>config.xml</strong> file.</em></p>
+
+<ol>
+  <li><strong>exec</strong>:cordova.exec
+     <code class="language-plaintext highlighter-rouge">exec(&lt;successFunction&gt;, &lt;failFunction&gt;, &lt;service&gt;, &lt;action&gt;, [&lt;args&gt;]);</code></li>
+</ol>
+
+<p>This marshals a request from the UIWebView to the iOS native side, effectively calling the action method on the service class, with the arguments passed in the args array.</p>
+
+<ol>
+  <li><strong>plugin method</strong>:</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>		- (void)myMethod:(CDVInvokedUrlCommand*)command
+	    {
+	        CDVPluginResult* pluginResult = nil;
+	        NSString* myarg = [command.arguments objectAtIndex:0];
+	        if (myarg != nil) {
+	            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_OK];
+	        } else {
+	            pluginResult = [CDVPluginResult resultWithStatus:CDVCommandStatus_ERROR messageAsString:@"Arg was null"];
+	        }
+	        [self.commandDelegate sendPluginResult:pluginResult callbackId:command.callbackId];
+	    }
+</code></pre></div></div>
+
+<ol>
+  <li>
+    <p><strong>The JavaScript Interface</strong></p>
+
+    <p>note:The JavaScript provides the front-facing interface, making it perhaps the most important part of the plugin. You can structure your plugin’s JavaScript however you like, but you need to call cordova.exec to communicate with the native platform, using the following syntax:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	cordova.exec(function(winParam) {},
+                 function(error) {},
+                 "service",
+                 "action",
+                 ["firstArgument", "secondArgument", 42, false]);
+</code></pre></div></div>
+
+<p><em>parameters</em>:</p>
+
+<ul>
+  <li>
+    <p>function(winParam) {}: A success callback function. Assuming your exec call completes successfully, this function executes along with any parameters you pass to it.</p>
+  </li>
+  <li>
+    <p>function(error) {}: An error callback function. If the operation does not complete successfully, this function executes with an optional error parameter.</p>
+  </li>
+  <li>
+    <p>“service”: The service name to call on the native side. This corresponds to a native class, for which more information is available in the native guides listed below.</p>
+  </li>
+  <li>
+    <p>“action”: The action name to call on the native side. This generally corresponds to the native class method. See the native guides listed below.</p>
+  </li>
+  <li></li>
+</ul>
+
+<p><em>sample Java Script</em></p>
+
+<p>js interface:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	 window.echo = function(str, callback) {
+        cordova.exec(callback, function(err) {
+            callback('Nothing to echo.');
+        }, "Echo", "echo", [str]);
+    };
+</code></pre></div></div>
+
+<h3 id="九configxml">九、config.xml</h3>
+<ol>
+  <li>
+    <p><strong>Global Preferences</strong>
+ <em>Fullscreen</em> allows you to hide the status bar, default is false.</p>
+  </li>
+  <li>
+    <p><strong>Multi-Platform Preferences</strong></p>
+    <ul>
+      <li><em>DisallowOverscroll</em> set to true to forbid the interface to display any feedback</li>
+      <li><em>HideKeyboardFormAccessoryBar</em> defaults to false,set to true to hide the additional toolbar</li>
+      <li><em>Orientation</em> to lock orientation and prevent the interface from rotating in response to changed in orientation.</li>
+    </ul>
+  </li>
+</ol>
+
+<h3 id="十events">十、Events</h3>
+<ol>
+  <li>
+    <p><strong>deviceready</strong>:when Cordova fully loaded.
+ <code class="language-plaintext highlighter-rouge">document.addEventListener("deviceready", yourCallbackFunction, false);</code></p>
+
+    <p>note:
+ The deviceready event fires once Cordova has fully loaded. Once the event fires, you can safely make calls to Cordova APIs. Applications typically attach an event listener with document.addEventListener once the HTML document’s DOM has loaded.</p>
+
+    <p>The deviceready event behaves somewhat differently from others. Any event handler registered after the deviceready event fires has its callback function called immediately.</p>
+
+    <p><em>example</em></p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	&lt;!DOCTYPE html&gt;
+	&lt;html&gt;
+	  &lt;head&gt;
+	    &lt;title&gt;Device Ready Example&lt;/title&gt;
+	
+	    &lt;script type="text/javascript" charset="utf-8" src="cordova.js"&gt;&lt;/script&gt;
+	    &lt;script type="text/javascript" charset="utf-8"&gt;
+	
+	    // Wait for device API libraries to load
+	    //
+	    function onLoad() {
+	        document.addEventListener("deviceready", onDeviceReady, false);
+	    }
+	
+	    // device APIs are available
+	    //
+	    function onDeviceReady() {
+	        // Now safe to use device APIs
+	    }
+	
+	    &lt;/script&gt;
+	  &lt;/head&gt;
+	  &lt;body onload="onLoad()"&gt;
+	  &lt;/body&gt;
+	&lt;/html&gt;
+</code></pre></div></div>
+<ol>
+  <li>
+    <p><strong>pause</strong>:fires when application is put into the background
+ <code class="language-plaintext highlighter-rouge">document.addEventListener("pause", yourCallbackFunction, false);</code></p>
+
+    <p><em>example</em>:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>	&lt;!DOCTYPE html&gt;
+	&lt;html&gt;
+	  &lt;head&gt;
+	    &lt;title&gt;Pause Example&lt;/title&gt;
+	    &lt;script type="text/javascript" charset="utf-8" src="cordova.js"&gt;&lt;/script&gt;
+	    &lt;script type="text/javascript" charset="utf-8"&gt;
+	    // Wait for device API libraries to load
+	    //
+	    function onLoad() {
+	        document.addEventListener("deviceready", onDeviceReady, false);
+	    }
+	    // device APIs are available
+	    //
+	    function onDeviceReady() {
+	        document.addEventListener("pause", onPause, false);
+	    }
+	
+	    // Handle the pause event
+	    //
+	    function onPause() {
+	    }
+	
+	    &lt;/script&gt;
+	  &lt;/head&gt;
+	  &lt;body onload="onLoad()"&gt;
+	  &lt;/body&gt;
+	&lt;/html&gt;
+
+</code></pre></div></div>
+<p>note:
+	In the pause handler, any calls to the Cordova API or to native plugins that go through Objective-C do not work, along with any interactive calls, such as alerts or console.log(). They are only processed when the app resumes, on the next run loop.</p>
+
+<ol>
+  <li>
+    <p><strong>resume</strong>:when an application is retrieved from the background
+ <code class="language-plaintext highlighter-rouge">document.addEventListener("resume", yourCallbackFunction, false);</code></p>
+
+    <p><em>example</em>:</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code> &lt;!DOCTYPE html&gt;
+	&lt;html&gt;
+	  &lt;head&gt;
+	    &lt;title&gt;Resume Example&lt;/title&gt;
+	
+	    &lt;script type="text/javascript" charset="utf-8" src="cordova.js"&gt;&lt;/script&gt;
+	    &lt;script type="text/javascript" charset="utf-8"&gt;
+	
+	    // Wait for device API libraries to load
+	    //
+	    function onLoad() {
+	        document.addEventListener("deviceready", onDeviceReady, false);
+	    }
+	
+	    // device APIs are available
+	    //
+	    function onDeviceReady() {
+	        document.addEventListener("resume", onResume, false);
+	    }
+	
+	    // Handle the resume event
+	    //
+	    function onResume() {
+	    }
+	
+	    &lt;/script&gt;
+	  &lt;/head&gt;
+	  &lt;body onload="onLoad()"&gt;
+	  &lt;/body&gt;
+	&lt;/html&gt;
+
+</code></pre></div></div>
+<p>note:
+	Any interactive functions called from a pause event handler execute later when the app resumes, as signaled by the resume event. These include alerts, console.log(), and any calls from plugins or the Cordova API, which go through Objective-C.</p>
+:ET

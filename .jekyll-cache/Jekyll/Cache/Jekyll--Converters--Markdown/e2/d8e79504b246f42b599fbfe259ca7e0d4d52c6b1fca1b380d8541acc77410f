@@ -1,0 +1,23 @@
+I"<<blockquote>
+  <h1 id="说明">说明</h1>
+  <p>自己托管到了<a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese">github</a>，同时制作了<a href="https://www.gitbook.com/book/andrewmika/-xcode-server-and-continuous-integration-guide/details">gitbook</a>。</p>
+</blockquote>
+
+<h1 id="目录">目录</h1>
+<ul>
+  <li>开始</li>
+  <li>
+    <p><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/1.md">关于Xcode中的持续集成</a></p>
+  </li>
+  <li>设置Xcode Server</li>
+  <li><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/2.md">安装OS X Server并配置Xcode Server</a></li>
+  <li><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/3.md">启用对源代码仓库的访问</a></li>
+  <li><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/4.md">配置bot以执行持续集成</a></li>
+  <li>
+    <p><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/5.md">Xcode Server环境变量参考</a></p>
+  </li>
+  <li>管理和监测Bot</li>
+  <li><a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/6.md">从报告导航器管理和监测Bot</a>
+<a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese/blob/master/7.md">从Web浏览器监控Bot</a></li>
+</ul>
+:ET

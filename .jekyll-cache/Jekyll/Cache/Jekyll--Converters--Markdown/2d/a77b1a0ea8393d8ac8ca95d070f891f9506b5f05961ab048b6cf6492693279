@@ -1,0 +1,22 @@
+I"�	<p>说到排查<code class="language-plaintext highlighter-rouge">BAD_ACCESS</code>崩溃，我们可能首先会想到使用<code class="language-plaintext highlighter-rouge">Zombie</code>来进行定位。但是这种方式只能适用于崩溃到同一个位置的时候。</p>
+
+<p>如果我们遇到的crah是随机的怎么办呢？</p>
+
+<p>首先我们要知道随机<code class="language-plaintext highlighter-rouge">BAD_ACCESS</code>产生的原因。当访问野指针、被损坏的内存区域等无法执行消息的内存时，便会出现<code class="language-plaintext highlighter-rouge">BAD_ACCESS</code>。</p>
+
+<p>当这个问题随机产生，崩溃到不同对象上时，就需要考虑是否是内存分配上的问题。因为每次启动对象创建的先后顺序会有差异，因此有内存错误时出错的对象便会不一样。</p>
+
+<p>为了确认这个问题，我们开启<code class="language-plaintext highlighter-rouge">Address Sanitizer</code>。
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/20190617204012.png" alt="" /></p>
+
+<p>这是<code class="language-plaintext highlighter-rouge">Xcode7</code>集成的内存分析功能，比<code class="language-plaintext highlighter-rouge">Zombie</code>有更强的捕获能力。多次运行，会发现都会停止在同一地方。而且都是同样的错误<code class="language-plaintext highlighter-rouge">heap_buffer_overflow</code>。</p>
+
+<p>这个地方是我们调用了一个底层C++库的地方，并且有手动分配内存的操作。</p>
+
+<p>通过与底层库的排查，我们发现是由于定义不一致，导致一个结构体里有个字符串分配了256的内存，而底层写入时以1024大小来写入，导致了内存溢出。这使后面分配给其他对象的内存区域被破坏，出现随机的<code class="language-plaintext highlighter-rouge">BAD_ACCESS</code>错误。</p>
+
+<h2 id="小结">小结</h2>
+<p>如果不是手动操作内存，出现随机<code class="language-plaintext highlighter-rouge">BAD_ACCESS</code>问题概率还是比较低的。当<code class="language-plaintext highlighter-rouge">Zombie</code>不能解决问题时，可以使用<code class="language-plaintext highlighter-rouge">Address Sanitizer</code>进行更深的分析。</p>
+
+<p>平时开发中，我们需要关注工具新特性的更新，用好了工具，在辅助我们分析问题时会有事半功倍的效果。</p>
+:ET

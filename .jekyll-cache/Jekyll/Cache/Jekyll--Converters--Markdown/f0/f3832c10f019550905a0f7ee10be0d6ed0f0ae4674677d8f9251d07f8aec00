@@ -1,0 +1,206 @@
+I"&C<h1 id="我的代码习惯">我的代码习惯</h1>
+<p>一直以来我都坚持团队合作里面要有一份编码规范，尽量保持编码的一致性，让代码更清晰，便于代码审查和团队合作。即使迫于某些原因无法普遍的实施，但也要严格要求自己。</p>
+
+<p>自己写的代码不仅仅是对项目，对自己负责，也要对他人负责。正常来讲在自己的写的东西在特定阶段会有其他人参与，也会被其他人接手，为了不被后来人骂的太惨，还是要保持良好的编码习惯。</p>
+
+<h2 id="代码规范">代码规范</h2>
+<p>代码规范不是自己凭空想像的，主要还是参考了各家的代码规范，外加自己的实践。自己遵守的代码规范，主要参考<a href="https://github.com/objc-zen/objc-zen-book">Objc Zen Book</a>。当时在火车上一口气看完，看完即决定就是它了。之前已有整理，详见<a href="http://iandrew.space/2017-01-21/shan-yu-objective-c-bian-cheng-yi-zhu-bi-ji">《禅与Objective-C 编程艺术》笔记</a>。接下来我再挑一些比较重要的来讲。</p>
+
+<h3 id="代码组织">代码组织</h3>
+
+<h4 id="分组">分组</h4>
+
+<ul>
+  <li>推荐使用属性。除了<code class="language-plaintext highlighter-rouge">init</code>和<code class="language-plaintext highlighter-rouge">dealloc</code>方法,应该总是使用<code class="language-plaintext highlighter-rouge">.</code>语法访问属性，如果<code class="language-plaintext highlighter-rouge">getter</code>方法里进行了初始化和其他操作，<code class="language-plaintext highlighter-rouge">init</code>方法里也应该使用<code class="language-plaintext highlighter-rouge">.</code>语法。</li>
+  <li>善于用<code class="language-plaintext highlighter-rouge">#Pragma Mark</code>进行代码分组。</li>
+  <li>私有方法添加<code class="language-plaintext highlighter-rouge">p_</code>前缀进行区分，但不要以下划线<code class="language-plaintext highlighter-rouge">_</code>开头。
+<img src="https://i.loli.net/2018/08/05/5b670e0578496.png" alt="pragma" /></li>
+</ul>
+
+<p>这样分组主要依据是涉及逻辑和经常变化的部分越靠前。<code class="language-plaintext highlighter-rouge">ConfigViews</code>和<code class="language-plaintext highlighter-rouge">Init</code>部分属于配置和布局，一个很少更改，二是手动布局代码量可能会很多，因此放到最后。这样我们在查看<code class="language-plaintext highlighter-rouge">.m</code>文件是更多的去关心这部分的业务逻辑。</p>
+
+<h4 id="语句总是使用大括号包围以避免错误">语句总是使用大括号包围，以避免错误</h4>
+
+<p>推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span> <span class="p">{</span>
+   <span class="k">return</span> <span class="n">success</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<p>不推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span>
+<span class="k">return</span> <span class="n">success</span><span class="p">;</span>
+<span class="err">或者</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">error</span><span class="p">)</span> <span class="k">return</span> <span class="n">success</span><span class="p">;</span>
+</code></pre></div></div>
+
+<h4 id="nil和bool检查使用感叹号来判断">nil和BOOL检查使用感叹号<code class="language-plaintext highlighter-rouge">！</code>来判断</h4>
+<p>因为<code class="language-plaintext highlighter-rouge">nil</code>是解释到<code class="language-plaintext highlighter-rouge">NO</code>所以没必要在条件语句里面把它和其他值比较。同时，不要直接把它和<code class="language-plaintext highlighter-rouge">YES</code>比较，因为<code class="language-plaintext highlighter-rouge">YES</code>的定义是<code class="language-plaintext highlighter-rouge">1</code>而<code class="language-plaintext highlighter-rouge">BOOL</code>是8位的，实际上是<code class="language-plaintext highlighter-rouge">char</code>类型。</p>
+
+<p>推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">someObject</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="p">[</span><span class="n">someObject</span> <span class="n">boolValue</span><span class="p">])</span> <span class="p">{</span> <span class="p">...</span>
+<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">someObject</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span>
+</code></pre></div></div>
+
+<p>不推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">if</span> <span class="p">(</span><span class="n">someObject</span> <span class="o">==</span> <span class="n">YES</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="c1">// Wrong</span>
+<span class="k">if</span> <span class="p">(</span><span class="n">myRawValue</span> <span class="o">==</span> <span class="n">YES</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span> <span class="c1">// Never do this.</span>
+<span class="k">if</span> <span class="p">([</span><span class="n">someObject</span> <span class="n">boolValue</span><span class="p">]</span> <span class="o">==</span> <span class="n">NO</span><span class="p">)</span> <span class="p">{</span> <span class="p">...</span>
+</code></pre></div></div>
+
+<h4 id="三元运算符应该只用在它能让代码更加清晰的地方">三元运算符<code class="language-plaintext highlighter-rouge">?:</code>,应该只用在它能让代码更加清晰的地方</h4>
+
+<p>推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+<span class="n">result</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="o">?</span> <span class="n">x</span> <span class="o">:</span> <span class="n">y</span><span class="p">;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">object</span> <span class="o">?</span> <span class="o">:</span> <span class="p">[</span><span class="n">self</span> <span class="n">createObject</span><span class="p">];</span> <span class="c1">// 第二个参数返回和条件语句中已经检查的对象一致时</span>
+</code></pre></div></div>
+
+<p>不推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">result</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&gt;</span> <span class="n">b</span> <span class="o">?</span> <span class="n">x</span> <span class="o">=</span> <span class="n">c</span> <span class="o">&gt;</span> <span class="n">d</span> <span class="o">?</span> <span class="n">c</span> <span class="o">:</span> <span class="n">d</span> <span class="o">:</span> <span class="n">y</span><span class="p">;</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">object</span> <span class="o">?</span> <span class="n">object</span> <span class="o">:</span> <span class="p">[</span><span class="n">self</span> <span class="n">createObject</span><span class="p">];</span> <span class="c1">// 第二个参数返回和条件语句中已经检查的对象一致时</span>
+</code></pre></div></div>
+
+<h4 id="当switch语句里使用可枚举的变量的时候default是不必要的没有default有利于错误的排查">当switch语句里使用可枚举的变量的时候，<code class="language-plaintext highlighter-rouge">default</code>是不必要的，没有<code class="language-plaintext highlighter-rouge">default</code>有利于错误的排查</h4>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">switch</span> <span class="p">(</span><span class="n">menuType</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">case</span> <span class="n">ZOCEnumNone</span><span class="p">:</span>
+        <span class="c1">// ...</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">ZOCEnumValue1</span><span class="p">:</span>
+        <span class="c1">// ...</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="k">case</span> <span class="n">ZOCEnumValue2</span><span class="p">:</span>
+        <span class="c1">// ...</span>
+        <span class="k">break</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div></div>
+
+<h4 id="关于遍历">关于遍历</h4>
+<p>多用快速遍历（for in）或者block的方式遍历,少用常规for循环。</p>
+
+<h4 id="enumerated-types枚举类型">Enumerated Types枚举类型</h4>
+<ul>
+  <li>推荐使用<code class="language-plaintext highlighter-rouge">NS_ENUM()</code>声明。</li>
+  <li>用枚举表示状态，选项，状态码，可读性和可用性会大大增加。</li>
+</ul>
+
+<h4 id="常量">常量</h4>
+<ul>
+  <li>多用类型常量，少用<code class="language-plaintext highlighter-rouge">#define</code>预处理指令，有利于错误检测。</li>
+  <li>类型常量如果在类外可见，则应该在.h文件中使用<code class="language-plaintext highlighter-rouge">extern</code>声明。</li>
+</ul>
+
+<h4 id="命名">命名</h4>
+<ul>
+  <li>使用驼峰命名法</li>
+  <li>单词直接不使用<code class="language-plaintext highlighter-rouge">_</code>连接。</li>
+  <li>多个参数时使用描述性关键词，不使用<code class="language-plaintext highlighter-rouge">and</code>等连接词来表明多个参数。</li>
+</ul>
+
+<h4 id="多使用字面量来创建不可变的实例对象">多使用字面量来创建不可变的实例对象。</h4>
+
+<p>推荐</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">NSArray</span> <span class="o">*</span><span class="n">names</span> <span class="o">=</span> <span class="err">@</span><span class="p">[</span><span class="err">@</span><span class="s">"Brian"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Matt"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Chris"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Alex"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Steve"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Paul"</span><span class="p">];</span>
+<span class="n">NSDictionary</span> <span class="o">*</span><span class="n">productManagers</span> <span class="o">=</span> <span class="err">@</span><span class="p">{</span><span class="err">@</span><span class="s">"iPhone"</span> <span class="o">:</span> <span class="err">@</span><span class="s">"Kate"</span><span class="p">,</span> <span class="err">@</span><span class="s">"iPad"</span> <span class="o">:</span> <span class="err">@</span><span class="s">"Kamal"</span><span class="p">,</span> <span class="err">@</span><span class="s">"Mobile Web"</span> <span class="o">:</span> <span class="err">@</span><span class="s">"Bill"</span><span class="p">};</span>
+<span class="n">NSNumber</span> <span class="o">*</span><span class="n">shouldUseLiterals</span> <span class="o">=</span> <span class="err">@</span><span class="n">YES</span><span class="p">;</span>
+<span class="n">NSNumber</span> <span class="o">*</span><span class="n">buildingZIPCode</span> <span class="o">=</span> <span class="err">@</span><span class="mi">10018</span><span class="p">;</span>
+</code></pre></div></div>
+<h4 id="注释">注释</h4>
+
+<p>秉承好的代码不需要注释来规范命名。但是一下几点推荐注释。</p>
+
+<ul>
+  <li>.h 头文件中推荐声明该类的作用</li>
+  <li>接口方法应该有注释</li>
+  <li>如果变量或方法名不明确的应该加上注释</li>
+  <li>待完善部分申明<code class="language-plaintext highlighter-rouge">TODO:</code></li>
+  <li>在需要的地方使用<code class="language-plaintext highlighter-rouge">#warning</code>和<code class="language-plaintext highlighter-rouge">#error</code>提示</li>
+</ul>
+
+<h3 id="美化代码">美化代码</h3>
+
+<ul>
+  <li>
+    <p>方法的大括号和其他的大括号(if/else/switch/while 等) 总是在同一行开始，在新起一行结束。</p>
+
+    <p>推荐:</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">isHappy</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">//Do something</span>
+  <span class="p">}</span>
+  <span class="k">else</span> <span class="p">{</span>
+      <span class="c1">//Do something else</span>
+  <span class="p">}</span>
+	
+</code></pre></div>    </div>
+
+    <p>不推荐:</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="k">if</span> <span class="p">(</span><span class="n">user</span><span class="p">.</span><span class="n">isHappy</span><span class="p">)</span>
+  <span class="p">{</span>
+    <span class="c1">//Do something</span>
+  <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+    <span class="c1">//Do something else</span>
+  <span class="p">}</span>
+</code></pre></div>    </div>
+  </li>
+  <li>方法命名在方法类型（-/+符号）后应该有一个空格。</li>
+  <li>方法之间应该要有一个空行来帮助代码看起来清晰且有组织。 方法内的空格应该用来分离功能，但是通常不同的功能应该用新的方法来定义。</li>
+  <li>优先使用 <code class="language-plaintext highlighter-rouge">auto-synthesize</code>。但是如果必要的话， <code class="language-plaintext highlighter-rouge">@synthesize</code> and <code class="language-plaintext highlighter-rouge">@dynamic</code>。</li>
+  <li>
+    <p>应该总是让冒号对齐。有一些方法签名可能超过三个冒号，用冒号对齐可以让代码更具有可读性。即使有代码块存在，也应该用冒号对齐方法。</p>
+
+    <p>推荐：</p>
+
+    <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="p">[</span><span class="n">UIView</span> <span class="n">animateWithDuration</span><span class="o">:</span><span class="mi">1</span><span class="p">.</span><span class="mi">0</span>
+               <span class="n">animations</span><span class="o">:^</span><span class="p">{</span>
+                   <span class="c1">// something</span>
+               <span class="p">}</span>
+               <span class="n">completion</span><span class="o">:^</span><span class="p">(</span><span class="n">BOOL</span> <span class="n">finished</span><span class="p">)</span> <span class="p">{</span>
+                   <span class="c1">// something</span>
+               <span class="p">}];</span>
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h2 id="接口设计">接口设计</h2>
+<ul>
+  <li>类加上前缀，避免命名空间冲突。</li>
+  <li>类的头文件（.h）中尽量少引入其他头文件，避免互相引用，降低耦合，减少编译时间。如需引入类，使用前向声明（<code class="language-plaintext highlighter-rouge">@class</code>）</li>
+  <li>尽量创建不可变对象，不要把可变对象属性公开，而是提供相关方法。</li>
+  <li>属性如果有读写权限设定，需要用<code class="language-plaintext highlighter-rouge">readonly</code>声明</li>
+  <li>方法命名要清晰，尽量不使用缩略词</li>
+</ul>
+
+<h2 id="善用代码片段">善用代码片段</h2>
+<p><img src="https://i.loli.net/2018/08/05/5b670b0877650.png" alt="QQ20180729-163322" /></p>
+
+<p>Xcode原生带有一些系统的<code class="language-plaintext highlighter-rouge">Code Snippet</code>，我们也可以根据需要添加我们自己的代码片段，提高开发效率。
+创建的代码片段会生成一个个文件，因此我们可以同步到云端，在不同设备上共享。</p>
+
+<h2 id="使用assets管理图片">使用Assets管理图片</h2>
+<ul>
+  <li>slicing</li>
+  <li>render</li>
+</ul>
+
+<h2 id="结合其他工具使用提高效率">结合其他工具使用，提高效率</h2>
+<ul>
+  <li>vscode</li>
+  <li>SourceTree</li>
+  <li>Go2Shell</li>
+  <li>iTerm2</li>
+  <li>simsim</li>
+  <li>Sequel Pro</li>
+  <li>AppCode</li>
+</ul>
+:ET

@@ -1,0 +1,25 @@
+I"%	<p>当我们在<code class="language-plaintext highlighter-rouge">drawRect</code>中绘图时，如果没有对当前view设置过背景色，或者未设置<code class="language-plaintext highlighter-rouge">opaque</code>属性值，会发现绘制的图形会重叠，这是因为<code class="language-plaintext highlighter-rouge">drawRect</code>默认不清除先前的内容。
+<code class="language-plaintext highlighter-rouge">drawRect</code>清除操作取决于是否有填充操作；
+<code class="language-plaintext highlighter-rouge">drawRect</code>清除内容机制如下：</p>
+<h3 id="context清理">context清理</h3>
+<p>UIView有个属性<code class="language-plaintext highlighter-rouge">opaque</code>, 默认为 YES。UIView 还有个属性<code class="language-plaintext highlighter-rouge">clearsContextBeforeDrawing</code>, 默认为 YES，官方文档解释如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@property(nonatomic,getter=isOpaque) BOOL              opaque;                     // default is YES. opaque views must fill their entire bounds or the results are undefined. the active CGContext in drawRect: will not have been cleared and may have non-zeroed pixels
+@property(nonatomic)                 BOOL              clearsContextBeforeDrawing; // default is YES. ignored for opaque views. for non-opaque views causes the active CGContext in drawRect: to be pre-filled with transparent pixels
+</code></pre></div></div>
+<ul>
+  <li>当opaque=YES时， 系统调用-drawRect:前，不会清除以前内容</li>
+  <li>当opaque= NO时， 系统调用-drawRect:前，会根据<code class="language-plaintext highlighter-rouge">clearsContextBeforeDrawing</code>属性做不同行为
+    <ul>
+      <li>clearsContextBeforeDrawing = YES， 则清除内容，以透明像素填充。</li>
+      <li>clearsContextBeforeDrawing = NO， 则不清除内容。</li>
+    </ul>
+  </li>
+</ul>
+
+<h3 id="backgroundcolor填充">backgroundColor填充</h3>
+<p><code class="language-plaintext highlighter-rouge">backgroundColor</code>填充context，默认为nil。</p>
+<ul>
+  <li>当设置<code class="language-plaintext highlighter-rouge">backgroundColor</code>后，系统每次会用设置的对应颜色填充context,也就清除了之前内容。</li>
+</ul>
+:ET

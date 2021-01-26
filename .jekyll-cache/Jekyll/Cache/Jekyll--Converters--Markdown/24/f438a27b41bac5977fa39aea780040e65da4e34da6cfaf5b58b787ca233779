@@ -1,0 +1,90 @@
+I"�<p>如果要进行iOS持续集成，最流行的大概是Jenkins，Fastlane。但是目前来看这些配置都比较复杂，而最简单的是使用<code class="language-plaintext highlighter-rouge">Xcode Server</code>，但是网上资料却比较少。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Xcode Server</code>由苹果开发，与Xcode高度集成，可对代码进行静态分析、单元测试、打包等。对苹果开发来说是最友好的一种方式。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Xcode 9</code>，是<code class="language-plaintext highlighter-rouge">Xcode Server</code>的一次转折。在此之前需要安装MacOS Server 在其基础上进行配置，虽然能够实现CI,但Bug比较多。</p>
+
+<p>从<code class="language-plaintext highlighter-rouge">Xcode 9</code>开始，<code class="language-plaintext highlighter-rouge">Xcode Server</code>就集成到了Xcode中，只需要安装Xcode就能进行CI操作，而且配置操作变得极其简单，证书也可以自动配置。</p>
+
+<h2 id="步骤一--开启xcode-server">步骤一 – 开启Xcode Server</h2>
+<p>在你希望用于持续集成的Mac电脑上开启Xcode Server</p>
+
+<p>打开Xcode -&gt; Preferences -&gt; 选中Server &amp; Bots -&gt; <strong>Turn On</strong></p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/42A1C222656AD8731057580E0719CB49.jpg" alt="" /></p>
+
+<h2 id="步骤二--连接xcode-server">步骤二 – 连接Xcode Server</h2>
+<p>在你开发的电脑上添加Xcode Server服务器。</p>
+
+<p>打开Xcode -&gt; Preferences -&gt; Accounts -&gt; 添加Xcode Server -&gt; 直接选择对应电脑或者通过IP连接</p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/9DF8054149615642CAE0207D8D12054C.jpg" alt="" /></p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/EADA133689C37A0677C370AE3916933A.jpg" alt="" /></p>
+
+<p>添加成功后将会在Report Navigator中看到添加的服务器。
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/355A2C8486C225153A76D6AA0A4F4E3A.jpg" alt="" /></p>
+
+<h2 id="步骤三--创建bot">步骤三 – 创建bot</h2>
+<p><code class="language-plaintext highlighter-rouge">Xcode Server</code>中CI任务由<code class="language-plaintext highlighter-rouge">Bot</code>进行管理
+创建由两种方式，一种通过Product -&gt; Create Bot 创建。另一种在<code class="language-plaintext highlighter-rouge">Report Navigator</code>中选中添加的服务器，右键Create Bot.</p>
+
+<p>取名-&gt;配置仓库-&gt;配置Scheme,静态分析，测试，打包等-&gt;集成的频率-&gt;证书配置-&gt;设备-&gt;xcodebuild参数和环境变量-&gt;打包触发器</p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/26A9025C8E11665870518A7587829FAA.jpg" alt="" />
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/F507806D87CBEE453BC90A6D211A08A1.jpg" alt="" /></p>
+
+<p>如果我们担心打出的包是Adhoc版本还是Appstore版本，我们可以通<code class="language-plaintext highlighter-rouge">ExportOptions.plist</code>来进行配置。如下图：
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/3449F6F859DC38BF1198030F43FA9593.jpg" alt="" /></p>
+
+<p>Trigger，这部分可以添加集成前、集成后需要触发的脚本，还有右键通知配置。</p>
+
+<p>一般开发中会使用cocoapods,也需要将包上传至蒲公英和appStore.
+这里提供几个脚本</p>
+
+<h3 id="pod-install">pod install</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nb">export </span><span class="nv">LANG</span><span class="o">=</span>en_US.UTF-8
+
+<span class="nb">cd</span> <span class="k">${</span><span class="nv">XCS_PRIMARY_REPO_DIR</span><span class="k">}</span>
+
+<span class="nb">pwd
+
+rm</span> <span class="nt">-f</span> Podfile.lock
+
+/usr/local/bin/pod <span class="nb">install</span>
+</code></pre></div></div>
+
+<p>这里需要注意的时pod 的路径。直接执行<code class="language-plaintext highlighter-rouge">pod install</code>可能会提示无法找到<code class="language-plaintext highlighter-rouge">pod</code>命令。因此需要直接载入完整路径。</p>
+
+<p>在terminal中执行<code class="language-plaintext highlighter-rouge">where pod</code>，找到打包机上的pod路径</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ where pod
+/usr/local/bin/pod
+</code></pre></div></div>
+
+<h3 id="上传蒲公英">上传蒲公英</h3>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+
+<span class="c">#请根据蒲公英自己的账号，将其中的 uKey 和 _api_key 的值替换为相应的值。</span>
+
+curl <span class="nt">-F</span> <span class="s2">"file=@</span><span class="k">${</span><span class="nv">XCS_PRODUCT</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-F</span> <span class="s2">"uKey=你的ukey"</span> <span class="nt">-F</span> <span class="s2">"_api_key=你的apiKey"</span> <span class="nt">-F</span> <span class="s2">"updateDescription=</span><span class="k">${</span><span class="nv">MSG</span><span class="k">}</span><span class="s2">"</span> <span class="nt">-F</span> <span class="s2">"password=</span><span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span><span class="s2">"</span> http://www.pgyer.com/apiv1/app/upload
+</code></pre></div></div>
+
+<h3 id="上传appstore">上传AppStore</h3>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">#!/bin/sh</span>
+<span class="nv">altoolPath</span><span class="o">=</span><span class="s2">"/Applications/Xcode.app/Contents/Applications/Application Loader.app/Contents/Frameworks/ITunesSoftwareService.framework/Versions/A/Support/altool"</span>
+<span class="c"># 填入你的Apple ID</span>
+<span class="nv">USERNAME</span><span class="o">=</span><span class="s2">"你的AppleID"</span>
+<span class="c">#  需要去Apple ID账户生成 App 专用密码</span>
+<span class="nv">PASSWORD</span><span class="o">=</span><span class="s2">"App 专用密码"</span>
+
+<span class="s2">"</span><span class="nv">$altoolPath</span><span class="s2">"</span> <span class="nt">--validate-app</span> <span class="nt">-f</span> <span class="k">${</span><span class="nv">XCS_PRODUCT</span><span class="k">}</span> <span class="nt">-u</span> <span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span> <span class="nt">-t</span> ios
+<span class="s2">"</span><span class="nv">$altoolPath</span><span class="s2">"</span> <span class="nt">--upload-app</span> <span class="nt">-f</span> <span class="k">${</span><span class="nv">XCS_PRODUCT</span><span class="k">}</span> <span class="nt">-u</span> <span class="k">${</span><span class="nv">USERNAME</span><span class="k">}</span> <span class="nt">-p</span> <span class="k">${</span><span class="nv">PASSWORD</span><span class="k">}</span> <span class="nt">-t</span> ios
+
+</code></pre></div></div>
+
+<h2 id="更详细的文档">更详细的文档</h2>
+<p>请参阅以前翻译的部分，一些配置还是可以用的<a href="https://github.com/Andrewmika/Xcode-Server-and-Continuous-Integration-Guide-in-Chinese">Xcode Server中文翻译</a></p>
+:ET

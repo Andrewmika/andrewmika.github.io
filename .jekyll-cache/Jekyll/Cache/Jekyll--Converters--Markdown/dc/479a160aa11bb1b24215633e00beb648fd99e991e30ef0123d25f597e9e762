@@ -1,0 +1,229 @@
+I":4<h2 id="前言">前言</h2>
+<p>现在大部分的开发者都是用Cocopods来管理第三方库，Cocoapods为库的管理提供了便利。在项目的发展当中会出现很多公共组件，如果只是单纯拷贝代码，维护起来会变得非常麻烦，因此制作私有库将给组件管理带来极大遍历，而Cocoapods也提供了这样的功能。</p>
+
+<p>文章分为两部分，第一部分是私有库的制作，第二部分介绍开源自己的库，将自己的库发布到Cocoapods公共仓库。</p>
+
+<h2 id="新建仓库">新建仓库</h2>
+<p>Cocoapods使用podspec来管理库的信息，因此需要一个仓库来管理这些podspec文件。如果要创建私有库就需要一个一个自己的仓库来存储podspec文件，如果开源就可以上传到Cocoapods公有的仓库。因此，创建私有库之前我们先创建私有的spec repo。</p>
+
+<h3 id="创建私有spec-repo">创建私有Spec Repo</h3>
+
+<ol>
+  <li>
+    <p>创建spec的git仓库
+ <code class="language-plaintext highlighter-rouge">http://192.168.1.100:3000/AndrewShen/MySpecRepo.git</code></p>
+  </li>
+  <li>
+    <p>添加创建的<code class="language-plaintext highlighter-rouge">Spec Repo</code></p>
+  </li>
+</ol>
+
+<p>使用命令行添加仓库到本地repo,会自动建立git的链接</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  <span class="c1"># pod repo add REPO_NAME SOURCE_URL</span>
+  <span class="err">$</span> <span class="n">pod</span> <span class="n">repo</span> <span class="n">add</span> <span class="no">MySpecRepo</span> <span class="n">http</span><span class="ss">:/</span><span class="o">/</span><span class="mf">192.168</span><span class="o">.</span><span class="mf">1.100</span><span class="p">:</span><span class="mi">3000</span><span class="o">/</span><span class="no">AndrewShen</span><span class="o">/</span><span class="no">MySpecRepo</span><span class="p">.</span><span class="nf">git</span>
+</code></pre></div></div>
+
+<p>将会执行:</p>
+
+<pre><code class="language-Ruby">  Cloning spec repo `MySpecRepo` from `http://192.168.1.100:3000/AndrewShen/MySpecRepo.git`
+</code></pre>
+
+<p>执行成功后可以执行<code class="language-plaintext highlighter-rouge">pod repo</code>查看已有的repo</p>
+
+<h2 id="新建pod">新建pod</h2>
+
+<h3 id="从零开始创建pod">从零开始创建pod</h3>
+
+<ol>
+  <li>如果需要从头开始写项目，开发组件，那可以通过<code class="language-plaintext highlighter-rouge">pod lib create</code>来创建工程
+    我们执行
+    <pre><code class="language-Ruby">    #pod lib create LIBNAME
+    pod lib create podDemo
+</code></pre>
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>之后会问你四个问题，问完后自动执行`pod install`并生成依赖：
+</code></pre></div>    </div>
+    <ol>
+      <li>使用什么语言</li>
+      <li>是否需要一个例子工程</li>
+      <li>选择一个测试框架</li>
+      <li>是否基于View测试</li>
+      <li>类的前缀
+如果执行<code class="language-plaintext highlighter-rouge">pod install</code>失败，则删掉PodFile里的test target就行了。</li>
+    </ol>
+  </li>
+  <li>创建成功后我们可以看到目录结构，我们的pod会存在于Example项目的Pods的<code class="language-plaintext highlighter-rouge">Development Pods</code>目录下。</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    podDemo
+    ├── Example
+    │   ├── Podfile
+    │   ├── Podfile.lock
+    │   ├── Pods
+    │   ├── Tests
+    │   ├── podDemo
+    │   ├── podDemo.xcodeproj
+    │   └── podDemo.xcworkspace
+    ├── LICENSE
+    ├── README.md
+    ├── _Pods.xcodeproj -&gt; Example/Pods/Pods.xcodeproj
+    ├── podDemo
+    │   ├── Assets
+    │   └── Classes
+    └── podDemo.podspec
+</code></pre></div></div>
+
+<p>3.向pod文件夹（此处为podDemo）中加入资源文件（<code class="language-plaintext highlighter-rouge">Assets</code>中）和库文件（<code class="language-plaintext highlighter-rouge">Classes</code>中），</p>
+
+<ol>
+  <li>
+    <p>在example文件夹下执行<code class="language-plaintext highlighter-rouge">pod update</code>更新工程pod。成功后<code class="language-plaintext highlighter-rouge">Development Pods</code>目录下我们的pod文件便会更新。<strong>只要更新了pod文件夹下内容或者更改了podspec文件都需要执行<code class="language-plaintext highlighter-rouge">pod update</code></strong></p>
+  </li>
+  <li>
+    <p>通过Cocoapods创建的项目会在本地的git管理下，我们需要将其添加到远程仓库。</p>
+  </li>
+</ol>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    <span class="n">git</span> <span class="n">add</span> <span class="p">.</span>
+    <span class="nf">git</span> <span class="n">commit</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"Initial"</span>
+    <span class="n">git</span> <span class="n">remote</span> <span class="n">add</span> <span class="n">origin</span> <span class="n">http</span><span class="ss">:/</span><span class="o">/</span><span class="n">git</span><span class="p">.</span><span class="nf">celebi</span><span class="p">.</span><span class="nf">com</span><span class="o">/</span><span class="no">AndrewShen</span><span class="o">/</span><span class="n">podDemo</span><span class="p">.</span><span class="nf">git</span>           <span class="c1">#添加远端仓库</span>
+    <span class="n">git</span> <span class="n">push</span> <span class="n">origin</span> <span class="n">master</span>     <span class="c1">#提交到远端仓库</span>
+</code></pre></div></div>
+
+<ol>
+  <li>由于<code class="language-plaintext highlighter-rouge">podspec</code>文件pod源需要<code class="language-plaintext highlighter-rouge">tag</code>号，因此我们需要为项目打上<code class="language-plaintext highlighter-rouge">tag</code>.</li>
+</ol>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code>   <span class="n">git</span> <span class="n">tag</span> <span class="o">-</span><span class="n">a</span> <span class="mf">0.0</span><span class="o">.</span><span class="mi">1</span> <span class="o">-</span><span class="n">m</span> <span class="s2">"tag release 0.0.1"</span> <span class="c1">#打tag</span>
+   <span class="n">git</span> <span class="n">push</span> <span class="o">--</span><span class="n">tags</span> <span class="c1">#提交tag</span>
+</code></pre></div></div>
+
+<ol>
+  <li>编辑<code class="language-plaintext highlighter-rouge">podspec文件</code></li>
+</ol>
+
+<pre><code class="language-Ruby">    Pod::Spec.new do |s|
+      s.name             = 'podDemo' #pod名称
+      s.version          = '0.1.0'   #pod版本
+      s.summary          = '测试pod简介.' #简介，需要更改，不然会报警告
+    
+    # This description is used to generate tags and improve search results.
+    #   * Think: What does it do? Why did you write it? What is the focus?
+    #   * Try to keep it short, snappy and to the point.
+    #   * Write the description between the DESC delimiters below.
+    #   * Finally, don't worry about the indent, CocoaPods strips it!
+    
+      s.description      = &lt;&lt;-DESC      #详细介绍，要比简介长
+                            测试pod的详细介绍
+                           DESC
+    
+      s.homepage         = 'http://192.168.1.100:3000/AndrewShen/podDemo' # 项目主页
+      # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
+      s.license          = { :type =&gt; 'MIT', :file =&gt; 'LICENSE' }  #协议
+      s.author           = { 'AndrewShen' =&gt; 'andrewshen@minture.com' }  # 开发者信息
+      s.source           = { :git =&gt; 'http://git.celebi.com/AndrewShen/podDemo.git', :tag =&gt; s.version.to_s } #仓库地址
+      # s.social_media_url = 'https://twitter.com/&lt;TWITTER_USERNAME&gt;'
+    
+      s.ios.deployment_target = '7.0' # 最低版本
+    
+      s.source_files = 'podDemo/Classes/**/*' # 库文件
+      
+      # s.resource_bundles = {                     #资源目录
+      #   'podDemo' =&gt; ['podDemo/Assets/*.png']
+      # }
+    
+      # s.public_header_files = 'Pod/Classes/**/*.h'
+      s.frameworks = 'UIKit', 'MapKit'   #依赖的framework
+      # s.dependency 'AFNetworking', '~&gt; 2.3'  # 依赖的第三方库  
+</code></pre>
+
+<ol>
+  <li>编辑后使用<code class="language-plaintext highlighter-rouge">pod lib lint</code>验证<code class="language-plaintext highlighter-rouge">podspec文件是否可用</code>。如果有<code class="language-plaintext highlighter-rouge">Error</code>和<code class="language-plaintext highlighter-rouge">Warning</code>是无法添加到<code class="language-plaintext highlighter-rouge">spec repo</code>中的。但是<code class="language-plaintext highlighter-rouge">Warning</code>可以存在，可以使用选项<code class="language-plaintext highlighter-rouge">--allow-warnings</code>忽略警告。</li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    pod lib lint
+</code></pre></div></div>
+
+<p>如果显示为以下则说明创建成功</p>
+
+<pre><code class="language-Ruby">    -&gt; podDemo (0.1.0)
+    podDemo passed validation.
+</code></pre>
+
+<h3 id="从组件项目中创建pod">从组件项目中创建pod</h3>
+
+<p>如果已经有组件项目/Demo则只需要创建podspec文件。</p>
+<ol>
+  <li>执行命令创建podspec文件：</li>
+</ol>
+
+<pre><code class="language-Ruby">  pod spec create ADSSegmentedButton https://github.com/Andrewmika/ADSSegmentedButton.git
+</code></pre>
+
+<ol>
+  <li>
+    <p>创建完成后打开我们创建的podspec文件，进行编辑。</p>
+  </li>
+  <li>
+    <p>验证文件是否可用</p>
+  </li>
+</ol>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>执行命令`pod lib lint`
+
+如果显示为以下则说明创建成功
+</code></pre></div></div>
+
+<pre><code class="language-Ruby">    -&gt; ADSSegmentedButton (0.0.1)
+
+    ADSSegmentedButton passed validation.
+</code></pre>
+
+<h2 id="pod本地测试">pod本地测试</h2>
+
+<p>配置好<code class="language-plaintext highlighter-rouge">podspec</code>文件后可以在本地测试pod是否可用，然后发布到服务器上.
+在<code class="language-plaintext highlighter-rouge">Podfile</code>中指定<code class="language-plaintext highlighter-rouge">pod</code>，可以指定_路径_或者_文件_</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>platform :ios, '7.0'
+
+pod 'PODNAME', :path =&gt; '项目路径'      # 指定路径
+pod 'PODNAME', :podspec =&gt; 'podspec文件路径'  # 指定podspec文件
+</code></pre></div></div>
+
+<p>由于还未将<code class="language-plaintext highlighter-rouge">pod</code>提交到<code class="language-plaintext highlighter-rouge">spec repo</code>中，因此<code class="language-plaintext highlighter-rouge">pod install</code>后的库文件仍然在<code class="language-plaintext highlighter-rouge">Development Pods</code>目录下</p>
+
+<h2 id="pod私有库发布">pod私有库发布</h2>
+
+<p><code class="language-plaintext highlighter-rouge">pod</code>发布只需要在podspec文件下执行一行命令，此命令会自动将文件push到git仓库中：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>#pod repo push REPONAME [NAME.podspec]
+pod repo push MySpecRepo podDemo.podspec
+</code></pre></div></div>
+
+<p>如果想要看详情可以加上选项<code class="language-plaintext highlighter-rouge">--verbose</code>。一般报错就是<code class="language-plaintext highlighter-rouge">tag</code>没打好，提取不到tag代码，无法验证podspec也就无法push。</p>
+
+<h2 id="发布到cocoapods">发布到CocoaPods</h2>
+
+<h3 id="注册帐号">注册帐号</h3>
+
+<pre><code class="language-Ruby">#pod trunk register YOUREMAIL 'NAME' --description='DESCRIPTION'
+pod trunk register orta@cocoapods.org 'Orta Therox' --description='macbook air'
+</code></pre>
+
+<p>将用户名，邮箱换成自己的，给设备添加描述信息。由于CocoaPods没有用户名密码，使用的是验证令牌，所以换一台电脑的话还需要执行以上命令。
+执行成功后会提示以下信息,点击连接完成注册。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[!] Please verify the session by clicking the link in the verification email that has been sent to 『your email』
+</code></pre></div></div>
+
+<p>完成后可以执行命令<code class="language-plaintext highlighter-rouge">pod trunk me</code>查看自己账户信息。</p>
+
+<h3 id="发布pod">发布pod</h3>
+
+<p>发布到公有库也只需要一行命令：</p>
+
+<pre><code class="language-Ruby">pod trunk push [NAME.podspec]
+</code></pre>
+
+<p>之后也会验证podspec,通过后上传。提交到公有库速度比较慢，需要耐心等待。</p>
+:ET

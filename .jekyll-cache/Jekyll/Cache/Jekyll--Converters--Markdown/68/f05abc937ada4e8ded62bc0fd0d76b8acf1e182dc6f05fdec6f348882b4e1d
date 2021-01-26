@@ -1,0 +1,206 @@
+I"S.<h1 id="nsoperationnsoperationqueue">NSOperation,NSOperationQueue</h1>
+<p><a href="https://github.com/Andrewmika/StudyDemo">demo</a>。最快熟悉的方式就是自己码一遍。</p>
+
+<h2 id="nsoperation">NSOperation</h2>
+<p>NSOperation是一个抽象类，我们可以直接使用其子类<code class="language-plaintext highlighter-rouge">NSInvocationOperation</code>和<code class="language-plaintext highlighter-rouge">NSBlockOperation</code>，或者封装<code class="language-plaintext highlighter-rouge">NSOperation</code>子类来添加要在线程中执行的操作。默认情况下NSOperation单独使用时执行同步操作。</p>
+
+<h3 id="nsinvocationoperation">NSInvocationOperation</h3>
+<p>操作在当前线程中执行，不开启新线程。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  NSInvocationOperation *op1 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(p_task1) object:nil];
+  [op1 start];
+</code></pre></div></div>
+
+<h3 id="nsblockoperation">NSBlockOperation</h3>
+<ul>
+  <li>如果封装多个操作，会自动开启线程，线程数由系统决定。<strong>封装多个操作时不受串行队列控制</strong>。
+创建操作：</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  NSBlockOperation *op = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"---&gt;blockOp1-Thread:%@",[NSThread currentThread]);
+    }];
+    [op start];
+</code></pre></div></div>
+<p>添加操作：通过<code class="language-plaintext highlighter-rouge">- (void)addExecutionBlock:(void (^)(void))block;</code>为<code class="language-plaintext highlighter-rouge">NSBlockOperation</code>添加额外的操作。这些操作可以在<strong>不同的线程中</strong>并发执行，线程的切换由<strong>系统决定</strong>。如果添加的操作较多，<code class="language-plaintext highlighter-rouge">blockOperationWithBlock:</code>中的操作可能会在其他线程中执行。</p>
+
+<h3 id="自定义nsoperation子类">自定义NSOperation子类</h3>
+<p>通过重写<code class="language-plaintext highlighter-rouge">main</code>或<code class="language-plaintext highlighter-rouge">start</code>方法来定义自己的<code class="language-plaintext highlighter-rouge">NSOperation</code>对象。</p>
+
+<p>// 当前线程执行</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@implementation CustomOperation
+
+- (void)main {
+    if (!self.cancelled) {
+        NSLog(@"---&gt;customMainOp-Thread:%@",[NSThread currentThread]);
+    }
+}
+
+@end
+</code></pre></div></div>
+
+<h3 id="并发执行">并发执行</h3>
+<p>需要重写的方法：
+必须：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">start</code>：是一个operation的起点。重写时不要调用父类的方法。</li>
+  <li><code class="language-plaintext highlighter-rouge">isExecuting</code>、<code class="language-plaintext highlighter-rouge">isFinished</code>:operation状态。当值发生变化时需要生成相应的<code class="language-plaintext highlighter-rouge">KVO</code>通知，以便外界能够观察状态变化。</li>
+  <li><code class="language-plaintext highlighter-rouge">isAsynchronous</code>：返回是否并发。</li>
+</ul>
+
+<p>可选：</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">main</code>：实现改operation相关联的任务。用<code class="language-plaintext highlighter-rouge">main</code>方法实现任务可使 <em>设置代码</em>  <em>任务代码</em> 得到分离，从而使operation的结构更加清晰。</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@implementation ConcurrentOperation
+
+@synthesize executing = _executing;
+@synthesize finished = _finished;
+
+- (BOOL)isExecuting {
+    return _executing;
+}
+
+- (BOOL)isFinished {
+    return _finished;
+}
+
+- (BOOL)isAsynchronous {
+    return YES;
+}
+
+- (void)start {
+    if (self.cancelled) {
+        [self willChangeValueForKey:@"isFinished"];
+        _finished = YES;
+        [self willChangeValueForKey:@"isFinished"];
+        return;
+    }
+    [self willChangeValueForKey:@"isExecuting"];
+    [NSThread detachNewThreadSelector:@selector(main) toTarget:self withObject:nil];
+    _executing = YES;
+    [self willChangeValueForKey:@"isExecuting"];
+}
+
+- (void)main {
+    NSLog(@"---&gt;concurrentOp-Thread:%@",[NSThread currentThread]);
+    [self willChangeValueForKey:@"isExecuting"];
+    _executing = NO;
+    [self didChangeValueForKey:@"isExecuting"];
+    
+    [self willChangeValueForKey:@"isFinished"];
+    _finished  = YES;
+    [self didChangeValueForKey:@"isFinished"];
+}
+@end
+
+</code></pre></div></div>
+<ul>
+  <li>注意：当operation被cancel时，仍然需要手动出发<code class="language-plaintext highlighter-rouge">isFinished</code>的<code class="language-plaintext highlighter-rouge">KVO</code>通知。因为当一个Operation依赖其他Operation时，它会观察所有其他Operation的<code class="language-plaintext highlighter-rouge">isFinished</code>的值的变化，只有当它依赖的所有Operation的<code class="language-plaintext highlighter-rouge">isFinished</code>的值为YES时，这个operation才能开始执行。</li>
+</ul>
+
+<h2 id="nsoperationqueue">NSOperationQueue</h2>
+<ul>
+  <li>NSOperation配合NSOperationQueue来实现多线程。<code class="language-plaintext highlighter-rouge">NSOperationQueue</code>对于添加到队列中的操作，首先进入<code class="language-plaintext highlighter-rouge">准备就绪</code>的状态，然后进入<code class="language-plaintext highlighter-rouge">就绪状态</code>，<code class="language-plaintext highlighter-rouge">就绪状态</code>的操作的开始执行顺序由操作之间相对的优先级决定。</li>
+  <li>理论上我们可以创建任意数量的OperationQueue，但数量越多并不意味着我们就能同时执行越多的Operation。<strong>因为并发的Operation数量由系统决定</strong>，系统会根据自身动态调整。</li>
+  <li>操作队列通过设置<code class="language-plaintext highlighter-rouge">maxConcurrentOperationCount</code>控制<strong>并发、串行</strong>，默认值为-1，并发执行，线程数由系统决定。为1时为串行队列。</li>
+</ul>
+
+<p>队列类型：</p>
+<ul>
+  <li>主队列：<code class="language-plaintext highlighter-rouge">[NSOperationQueue mainQueue];</code></li>
+  <li>异步主队列：<code class="language-plaintext highlighter-rouge">[[NSOperationQueue alloc] init];</code></li>
+</ul>
+
+<h3 id="操作加入到队列">操作加入到队列</h3>
+<h4 id="addoperation">addOperation</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    NSOperationQueue *customQueue = [[NSOperationQueue alloc] init];
+    NSInvocationOperation *op1 = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(p_task1) object:nil];
+    
+    NSBlockOperation *op3 = [NSBlockOperation blockOperationWithBlock:^{
+        sleep(2);
+        NSLog(@"---&gt;OpQueue1-Thread:%@",[NSThread currentThread]);
+    }];
+    [customQueue addOperation:op1];
+    [customQueue addOperation:op3];
+</code></pre></div></div>
+
+<h4 id="addoperationwithblock">addOperationWithBlock</h4>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    NSOperationQueue *customQueue = [[NSOperationQueue alloc] init];
+    [customQueue addOperationWithBlock:^{
+        NSLog(@"---&gt;BlockOpQueue1-Thread:%@",[NSThread currentThread]);
+    }];
+</code></pre></div></div>
+
+<h3 id="并发控制">并发控制</h3>
+<p>operationQueue的并发控制由<code class="language-plaintext highlighter-rouge">maxConcurrentOperationCount</code>来控制。</p>
+<ul>
+  <li>默认值<code class="language-plaintext highlighter-rouge">NSOperationQueueDefaultMaxConcurrentOperationCount</code>，-1,系统控制并发数量。</li>
+  <li>设置为1时，串行队列，操作依次执行，但<strong>操作处于的线程由系统控制</strong>。</li>
+  <li><code class="language-plaintext highlighter-rouge">&gt;1</code> 时，最大并发数不能大于系统能提供的并发数。</li>
+</ul>
+
+<h3 id="nsoperation操作依赖">NSOperation操作依赖</h3>
+<blockquote>
+  <p>NSOperation依赖关系由自身管理,与Queue无关。
+添加是在Operation操作执行之前添加。
+<em>防止循环依赖</em></p>
+</blockquote>
+
+<ul>
+  <li>添加依赖：<code class="language-plaintext highlighter-rouge">- (void)addDependency:(NSOperation *)op;</code></li>
+  <li>移除依赖：<code class="language-plaintext highlighter-rouge">- (void)removeDependency:(NSOperation *)op;</code></li>
+</ul>
+
+<h3 id="nsoperation优先级---针对已加入到到队列中的操作有效">NSOperation优先级 - 针对已加入到到队列中的操作有效。</h3>
+<ul>
+  <li>operation的执行顺序的第一要素是它们的<code class="language-plaintext highlighter-rouge">isReady</code>状态，其次是它们在队列中的优先级。优先级只决定<code class="language-plaintext highlighter-rouge">isReady</code>为YES的Operation的执行顺序。当operation依赖未执行完时，<code class="language-plaintext highlighter-rouge">isReady</code>为NO。</li>
+  <li>队列优先级只应用于相同的<code class="language-plaintext highlighter-rouge">Queue</code>中的<code class="language-plaintext highlighter-rouge">Operation</code>之间。</li>
+  <li>Operation依赖 &gt; Operation优先级。</li>
+  <li>默认优先级：<code class="language-plaintext highlighter-rouge">NSOperationQueuePriorityNormal</code>。</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>typedef NS_ENUM(NSInteger, NSOperationQueuePriority) {
+	NSOperationQueuePriorityVeryLow = -8L,
+	NSOperationQueuePriorityLow = -4L,
+	NSOperationQueuePriorityNormal = 0,
+	NSOperationQueuePriorityHigh = 4,
+	NSOperationQueuePriorityVeryHigh = 8
+};
+</code></pre></div></div>
+
+<h3 id="线程间通信">线程间通信</h3>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>  NSOperationQueue *opQ = [[NSOperationQueue alloc] init];
+    [opQ addOperationWithBlock:^{
+        sleep(1);
+        NSLog(@"---&gt;1-Thread:%@",[NSThread currentThread]);
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            NSLog(@"---&gt;2-Thread:%@",[NSThread currentThread]);
+        }];
+    }];
+</code></pre></div></div>
+<h3 id="线程安全">线程安全</h3>
+<p>若每个线程中对全局变量、静态变量只有读操作，而无写操作，一般来说，这个全局变量是线程安全的；若有多个线程同时执行写操作（更改变量），一般都需要考虑线程同步，否则的话就可能影响线程安全。</p>
+
+<p>线程安全解决：<strong>加锁</strong></p>
+<ul>
+  <li>@synchronized</li>
+  <li>NSLock、NSRecrusiveLock、NSCondition、NSConditionLock</li>
+  <li>pthread_mutex</li>
+  <li>dispatch_semaphore</li>
+  <li>atomic</li>
+</ul>
+
+<p>性能对比：
+<img src="https://i.loli.net/2018/05/04/5aebfeebd3f99.png" alt="lock_benchmark.png" /></p>
+
+<h1 id="参考">参考</h1>
+<p><a href="https://bujige.net/blog/iOS-Complete-learning-NSOperation.html">https://bujige.net/blog/iOS-Complete-learning-NSOperation.html</a>
+<a href="http://blog.leichunfeng.com/blog/2015/07/29/ios-concurrency-programming-operation-queues/">http://blog.leichunfeng.com/blog/2015/07/29/ios-concurrency-programming-operation-queues/</a>
+<a href="https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/">https://blog.ibireme.com/2016/01/16/spinlock_is_unsafe_in_ios/</a></p>
+:ET

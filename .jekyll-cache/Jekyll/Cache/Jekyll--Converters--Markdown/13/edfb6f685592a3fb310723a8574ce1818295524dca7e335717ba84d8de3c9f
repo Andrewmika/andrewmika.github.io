@@ -1,0 +1,303 @@
+I"�M<p><a href="https://github.com/Andrewmika/ARKitSwiftDemo">DEMO</a>
+包含功能平面检测、环境纹理、物体操作（添加、选中、拖动、缩放、旋转）、图像识别、环境音效</p>
+
+<h1 id="什么是arkit">什么是ARKit</h1>
+<p><code class="language-plaintext highlighter-rouge">AR（Augmented Reality）</code>运用计算机技术，将虚拟的信息应用到真实世界，被人类感官所感知。给人一种虚拟物体存在于现实世界的<strong>错觉</strong>。而<code class="language-plaintext highlighter-rouge">ARKit</code>整合运动传感器数据，相机数据，相机捕捉到的图像分析数据，用于建立现实场景和建模AR内容的虚拟场景的对应关系，为这种错觉提供数据基础，简化构建AR体验。</p>
+
+<h1 id="构建ar体验的三驾马车">构建AR体验的三驾马车</h1>
+
+<h2 id="tracking">Tracking</h2>
+<p>通过Tracking，我们可以：</p>
+<ul>
+  <li>获得相机在现实世界中的位置。</li>
+  <li>将相机图像和运动数据整合，形成AR视图。</li>
+  <li>追踪特征点，构建AR场景。追踪人脸，图像，物体等。</li>
+</ul>
+
+<p>AR追踪的单位为<strong>m</strong>。因此在制作AR模型时，需要按照物体实际在现实世界中的屋里比例来制作。这样物体不至于过大或过小，呈现会更真实。
+在iOS开发中，Tracking通过<code class="language-plaintext highlighter-rouge">AVFoundation</code>来获取场景图像，<code class="language-plaintext highlighter-rouge">CoreMotion</code>来获取运动数据。结合两者形成AR视图。</p>
+
+<h3 id="tracking质量">Tracking质量</h3>
+<p>要保证高质量的追踪Tracking数据，需要高质量的特征点。需要满足以下条件：</p>
+<ul>
+  <li>持续的相机数据和传感器数据</li>
+  <li>环境纹理要足够明显。需要处于一个光线充足并且纹理明显的环境当中，这样ARKit更容易提取特征点，建立空间对应关系。</li>
+  <li>静态场景。动态场景会导致视觉数据和运动数据不相符，影响追踪质量。</li>
+</ul>
+
+<h2 id="scene-understanding">Scene Understanding</h2>
+
+<ul>
+  <li>平面检测</li>
+  <li>hit-testing</li>
+  <li>光线估计</li>
+</ul>
+
+<h2 id="rendering">Rendering</h2>
+<p>对iOS开发者来说，最便捷的渲染方式是<code class="language-plaintext highlighter-rouge">SceneKit</code>。ARKit负责收集数据，渲染负责展示AR模型。
+支持的渲染方式如下：</p>
+<ul>
+  <li>SceneKit</li>
+  <li>SpringKit</li>
+  <li>OpenGL/Metal</li>
+</ul>
+
+<p><strong>下面这幅图展示了<code class="language-plaintext highlighter-rouge">ARKit</code>在一个AR应用中的角色。</strong></p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/35441A0BC4DD854B12504DA75D685F00.png" alt="" /></p>
+
+<h1 id="三步创建你自己的ar体验">三步创建你自己的AR体验</h1>
+<p>创建AR体验只需要三步：
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/2948CEA4C7713E05D9F3117F31475874.jpg" alt="" /></p>
+
+<p><code class="language-plaintext highlighter-rouge">ARSession</code>通过<code class="language-plaintext highlighter-rouge">ARSessionConfiguration</code>开启，由Delegate回调<code class="language-plaintext highlighter-rouge">ARFrame</code>信息数据进行展示。</p>
+
+<p>相关代码如下：</p>
+
+<p>初始化Configuration</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Start the view's AR session with a configuration that uses the rear camera,
+// device position and orientation tracking, and plane detection.
+let configuration = ARWorldTrackingConfiguration()
+configuration.planeDetection = [.horizontal, .vertical]
+</code></pre></div></div>
+
+<p>运行ARSession</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sceneView.session.run(configuration)
+</code></pre></div></div>
+
+<p>获取委托数据。ps:如果使用<code class="language-plaintext highlighter-rouge">SceneKit</code>来渲染，则不用关心Session回调，只需要关心<code class="language-plaintext highlighter-rouge">SceneKit</code>的<code class="language-plaintext highlighter-rouge">Node</code>相关操作和回调。</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// Access the latest frame
+func session(_: ARSession, didUpdate: ARFrame)
+</code></pre></div></div>
+<p>接下来我们就来了解一下<code class="language-plaintext highlighter-rouge">ARKit</code>中几个重要的类。</p>
+
+<h2 id="arsession">ARSession</h2>
+<p>AR体验通过<code class="language-plaintext highlighter-rouge">ARSession</code>来开启。它管理着Tracking时所有的进程，是管理设备相机和动作处理的共享对象。<code class="language-plaintext highlighter-rouge">ARSession</code>整合运动传感器数据，相机数据，相机捕捉到的图像分析数据，用于建立设备所在场景和建模AR内容的虚拟场景的对应关系。
+每一个AR 体验都需要一个<code class="language-plaintext highlighter-rouge">ARSession</code>对象。如果使用<code class="language-plaintext highlighter-rouge">ARSCNView</code>或者<code class="language-plaintext highlighter-rouge">ARSKView</code>来渲染展示部分，View对象包含一个<code class="language-plaintext highlighter-rouge">ARSession</code>实例。如果使用你自己的渲染器，你需要实例化并维护一个<code class="language-plaintext highlighter-rouge">ARSession</code>对象。</p>
+
+<p><code class="language-plaintext highlighter-rouge">ARSession</code>对象需要通过<code class="language-plaintext highlighter-rouge">ARConfiguration</code>子类来运行，这个配置决定ARKit如何追踪设备相对于现实场景中的位置及动作。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/**
+     Runs the session with the provided configuration and options.
+     @discussion Calling run on a session that has already started will
+     transition immediately to using the new configuration. Options
+     can be used to alter the default behavior when transitioning configurations.
+     @param configuration The configuration to use.
+     @param options The run options to use.
+*/
+open func run(_ configuration: ARConfiguration, options: ARSession.RunOptions = [])
+
+</code></pre></div></div>
+
+<h2 id="arconfiguration">ARConfiguration</h2>
+<p><code class="language-plaintext highlighter-rouge">ARSession</code>由<code class="language-plaintext highlighter-rouge">ARConfiguration</code><strong>子类</strong>来开启。不同Configuration有不同的特性，都是通过环境中的<strong>特征点</strong>来进行追踪。</p>
+
+<h3 id="arworldtrackingconfiguration---ios-110---6dof">ARWorldTrackingConfiguration - iOS 11.0+ - 6DOF</h3>
+<p>使用后置摄像头精确跟踪设备的位置和方向，并允许平面检测、hit-testing、基于环境的光线估计、以及图像和对象检测追踪。
+ARKit使用<strong>视觉惯性测量法（visual-inertial odometry）</strong>在真实和虚拟空间之间建立对应关系。</p>
+
+<h4 id="功能">功能</h4>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">planeDetection</code>：查找现实平面（水平或竖直），并作为<code class="language-plaintext highlighter-rouge">ARPlaneAnchor</code>对象来添加到会话中。</li>
+  <li><code class="language-plaintext highlighter-rouge">detectionImages</code>：识别2D图像并追踪图像的移动，并作为<code class="language-plaintext highlighter-rouge">ARImageAnchor</code>对象添加到场景中。</li>
+  <li><code class="language-plaintext highlighter-rouge">detectionObjects</code>：识别3D对象，并作为<code class="language-plaintext highlighter-rouge">ARObjectAnchor</code>对象添加到场景中。</li>
+  <li><code class="language-plaintext highlighter-rouge">environmentTexturing</code>：光面物体上展示环境纹理。</li>
+  <li>在<code class="language-plaintext highlighter-rouge">ARFrame</code>,<code class="language-plaintext highlighter-rouge">ARSCNView</code>或者<code class="language-plaintext highlighter-rouge">ARSKView</code>中通过<code class="language-plaintext highlighter-rouge">hit-testing</code>来查找与相机场景的2D坐标对应的现实世界中的位置。</li>
+</ul>
+
+<p>最佳实践：</p>
+<ul>
+  <li>在可靠的照明条件中设计AR体验。世界追踪需要清晰的图像来进行图像分析。如果细节不清晰，追踪效果将会降低。比如，相机对着空白墙面或者处于光线不足的场景中时。</li>
+  <li>根据追踪信息来提供用户反馈。世界追踪将图像分析与设备运动关联。如果设备正在移动，ARKit会更好地理解场景。但过度的运动又会降低追踪质量。<code class="language-plaintext highlighter-rouge">ARCamera</code>类提供追踪状态的原因信息，可以使用此信息来进行<strong>UI展示</strong>。</li>
+  <li>留出时间进行平面检测，并在获得所需结果时禁用平面检测。平面检测结果是一个凸多边形，会随着检测结果不断变化。</li>
+</ul>
+
+<h3 id="arorientationtrackingconfiguration---ios-110---3dof">AROrientationTrackingConfiguration - iOS 11.0+ - 3DOF</h3>
+<p>提供基本AR体验。使用后置摄像头跟踪设备方向。</p>
+
+<h3 id="arfacetrackingconfiguration---ios-110">ARFaceTrackingConfiguration - iOS 11.0+</h3>
+<p>提供使用前置摄像头的AR体验，并跟踪用户脸部拓扑和表情。
+检测到人脸会返回一个<code class="language-plaintext highlighter-rouge">ARFaceAnchor</code>对象。其中的信息包括包头部姿势，脸部网格拓扑，眼球追踪信息和混合形状的信息<strong>系数</strong>。如果启用光估计，则会估计光线方向。</p>
+
+<p>开启会话：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>guard ARFaceTrackingConfiguration.isSupported else { return }
+let configuration = ARFaceTrackingConfiguration()
+configuration.isLightEstimationEnabled = true
+sceneView.session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ARFaceTrackingConfiguration</code>：使用TrueDepth相机追踪脸部动作和表情</li>
+  <li><code class="language-plaintext highlighter-rouge">ARFaceAnchor</code>：包含脸部姿势，拓扑，表情信息。如果有多张脸，ARKit会旋转最大的或最清晰的来识别。</li>
+  <li><code class="language-plaintext highlighter-rouge">ARSCNFaceGeometry</code></li>
+  <li><code class="language-plaintext highlighter-rouge">ARDirectionalLightEstimate</code>： 模拟环境光照信息</li>
+</ul>
+
+<h3 id="arimagetrackingconfiguration---ios-120---6dof">ARImageTrackingConfiguration - iOS 12.0+ - 6DOF</h3>
+<p>使用后置摄像头来追踪已知图像，最多可同时最终4张图像。</p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/9753F93D79E8FEEDA6324D92AA77BFDB.jpg" alt="" /></p>
+
+<p>通过在Asset catalog中创建AR Resource Group，导入需要识别的图像，来进行检测。Group中最多可导入25张图片。</p>
+
+<p>在选择图像时有几点要求：</p>
+<ul>
+  <li>为每张图像指定准确物理尺寸。ARKit通过这个物理尺寸决定图像与镜头的距离。</li>
+  <li>特征点明显，对比度高。利于识别。</li>
+  <li>避免反光材质等会干扰视觉图像的因素。</li>
+</ul>
+
+<p>example:</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>guard let referenceImages = ARReferenceImage.referenceImages(inGroupNamed: "AR Resources", bundle: nil) else {
+    fatalError("Missing expected asset catalog resources.")
+}
+
+let configuration = ARWorldTrackingConfiguration()
+configuration.detectionImages = referenceImages
+session.run(configuration, options: [.resetTracking, .removeExistingAnchors])
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ARReferenceImage</code>: 在现实世界环境中被识别的图像。</li>
+  <li><code class="language-plaintext highlighter-rouge">ARImageAnchor</code>：包含检测到的图像的位置和方向信息。</li>
+</ul>
+
+<h4 id="最佳实践">最佳实践</h4>
+<ul>
+  <li>使用检测到的图像来设置AR场景的参考系</li>
+  <li>使用检测到的图像作为虚拟内容的起点</li>
+  <li>考虑何时允许检测到的图像来触发交互：检测到图像时，操作只会触发一次。要触发多次可使用<code class="language-plaintext highlighter-rouge"> removeAnchor:</code>在合适的时间主动移除，下一次检测到图像时，ARKit会添加一个新的anchor.</li>
+</ul>
+
+<h3 id="arobjectscanningconfiguration---ios-120---6dof">ARObjectScanningConfiguration - iOS 12.0+ - 6DOF</h3>
+<p>提供使用后置摄像头收集高保真空间数据，创建参考对象以便在其他AR体验中进行检测。
+通过在Asset catalog中创建AR Resource Group，导入需要包含识别对象信息的<code class="language-plaintext highlighter-rouge">.arobject</code>文件，来进行检测。</p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/514DB836DB5D2CAB14EAF83679CFCB23.jpg" alt="" /></p>
+
+<p>example：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>let configuration = ARWorldTrackingConfiguration()
+guard let referenceObjects = ARReferenceObject.referenceObjects(inGroupNamed: "gallery", bundle: nil) else {
+    fatalError("Missing expected asset catalog resources.")
+}
+configuration.detectionObjects = referenceObjects
+sceneView.session.run(configuration)
+</code></pre></div></div>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">ARReferenceObject</code>：要识别的3D对象</li>
+  <li><code class="language-plaintext highlighter-rouge">ARObjectAnchor</code>：检测到的3D对象的位置和方向信息。</li>
+</ul>
+
+<h3 id="degrees-of-freedom">degrees of freedom</h3>
+<p>下面这幅图展示的是6 degrees of freedom。其实就是包含在三位坐标x, y, z三轴上的位置（在轴上平移）和方向（绕轴旋转）。
+<img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/A663B6D9C7BC6F77AA90115D8AFAB8A7.jpg" alt="" /></p>
+
+<h2 id="arframe">ARFrame</h2>
+<p>每一个<code class="language-plaintext highlighter-rouge">ARFrame</code>都包含一个<code class="language-plaintext highlighter-rouge">ARCamera（虚拟的相机对象：包含位置和成像特征的信息）</code>
+<code class="language-plaintext highlighter-rouge">ARFrame</code>包含如下信息：</p>
+<ul>
+  <li>带有位置追踪信息的视频图像</li>
+  <li>追踪的信息和状态</li>
+  <li>场景信息</li>
+</ul>
+
+<h2 id="arhittestresult">ARHitTestResult</h2>
+<p>包含通过检查AR会话的设备摄像机视图中的点找到有关真实世界表面的信息。</p>
+
+<h2 id="aranchor">ARAnchor</h2>
+<p>锚点，这个大家都比较好理解。
+我们如果要在现实世界中挂一幅画要怎么做呢？大致只需要两步。</p>
+<ol>
+  <li>找到我们要挂画的<strong>位置</strong>，定一个钉子（下个锚点）</li>
+  <li>把你的画（虚拟物体），挂上去</li>
+</ol>
+
+<p>特点：</p>
+<ul>
+  <li>物理世界中的点，用于放置虚拟物体。</li>
+  <li>包含现实世界位置和方向</li>
+  <li>通过ARSession添加和删除</li>
+  <li>有丰富的子类，包含不同的anchor信息， 或自定义anchor</li>
+  <li>通过ARSessionDelegate更新 add/update/remove</li>
+</ul>
+
+<h2 id="scenekit相关">SceneKit相关</h2>
+<p>了解了ARKit的操作，下一步就要进行渲染。SceneKit负责所有虚拟物体的渲染。这里我们使用<code class="language-plaintext highlighter-rouge">ARSCNView</code>,它的主要功能如下</p>
+<ul>
+  <li>绘制捕捉的图像</li>
+  <li>更新SCNCamera</li>
+  <li>更新场景光线</li>
+  <li><strong>映射SCNNodes到ARAchors</strong></li>
+</ul>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/B3F27C49C8EBAB78808827930DC81BD2.jpg" alt="" /></p>
+
+<p>SceneKit会把<code class="language-plaintext highlighter-rouge">ARAnchor</code>与<code class="language-plaintext highlighter-rouge">SCNNode</code>对应。我们要操作虚拟物体时，只需要操作Scene世界中的<code class="language-plaintext highlighter-rouge">Node</code>.我们关注的也都是<code class="language-plaintext highlighter-rouge">ARSCNViewDelegate</code>的回调。</p>
+
+<h3 id="环境音效">环境音效</h3>
+<p>可以使用<code class="language-plaintext highlighter-rouge">SceneKit</code>的node-based audio API给物体添加声音。如果需要环境音效效果，需要使用<strong>单声道</strong>音频。</p>
+
+<p>example：</p>
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>// MARK: - Sound
+    /// Sets up the audio for playback.
+    /// - Tag: SetUpAudio
+    private func setUpAudio() {
+        // Instantiate the audio source
+        audioSource = SCNAudioSource(fileNamed: "fireplace.mp3")!
+        // As an environmental sound layer, audio should play indefinitely
+        audioSource.loops = true
+        // Decode the audio from disk ahead of time to prevent a delay in playback
+        audioSource.load()
+    }
+    /// Plays a sound on the `objectNode` using SceneKit's positional audio
+    /// - Tag: AddAudioPlayer
+    private func playSound() {
+        // Ensure there is only one audio player
+        objectNode.removeAllAudioPlayers()
+        // Create a player from the source and add it to `objectNode`
+        objectNode.addAudioPlayer(SCNAudioPlayer(source: audioSource))
+    }
+</code></pre></div></div>
+
+<h2 id="arkit-2新特性">ARKit 2新特性</h2>
+
+<h3 id="空间映射的存储和共享">空间映射的存储和共享</h3>
+<p>新增了<code class="language-plaintext highlighter-rouge">ARWorldMap</code>，包含映射信息。可以保存场景的状态，进行<strong>场景共享</strong>。</p>
+
+<p><img src="https://raw.githubusercontent.com/Andrewmika/MyPicBed/master/img/27E42D128AAC7D0B2FD76319ADA58344.jpg" alt="" /></p>
+
+<h3 id="world-tracking-enhancements">World Tracking Enhancements</h3>
+<ul>
+  <li>保存/加载映射</li>
+  <li>更快的初始化和平面检测</li>
+  <li>检测更精准</li>
+  <li>连续对焦</li>
+  <li>4:3视频格式， ARKit2的默认格式</li>
+</ul>
+
+<h3 id="environment-texturing">Environment Texturing</h3>
+<p>可以在光面物体上反射环境纹理，让物体更逼真。</p>
+
+<h3 id="image-tracking">Image Tracking</h3>
+<p>查阅<code class="language-plaintext highlighter-rouge">ARImageTrackingConfiguration</code>。</p>
+
+<h3 id="object-detection">Object Detection</h3>
+<p>查阅<code class="language-plaintext highlighter-rouge">ARObjectScanningConfiguration</code>。</p>
+
+<h3 id="face-tracking-enhancements">Face Tracking Enhancements</h3>
+<p>新增眼球👀和舌头😝追踪</p>
+
+<h2 id="推荐阅读">推荐阅读</h2>
+
+<p><a href="https://developer.apple.com/documentation/arkit">官方手册</a></p>
+
+<p><a href="https://developer.apple.com/videos/play/wwdc2017/602/">Introducing ARKit: Augmented Reality for iOS</a></p>
+
+<p><a href="https://developer.apple.com/videos/play/tech-talks/601/">Face Tracking with ARKit</a></p>
+
+<p><a href="https://developer.apple.com/videos/play/wwdc2018/602/">What’s New in ARKit 2</a></p>
+
+<p><a href="https://developer.apple.com/videos/play/wwdc2018/610/">Understanding ARKit Tracking and Detection</a></p>
+:ET
